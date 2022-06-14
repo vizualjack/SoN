@@ -4,18 +4,19 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-class SyncerTest {
+class SyncFolderTest {
     @Test void findFileInSyncFolder() {
         var testFileName = "teeeestFiile";
 
         var testFolder = createTestFolder();
         createFile(testFolder, testFileName);
 
-        var syncer = new Syncer(testFolder);
+        var syncer = new SyncFolder(testFolder);
         var files = syncer.getFiles();
         System.out.println(testFolder.delete());
         deleteFolder(testFolder);
@@ -29,7 +30,7 @@ class SyncerTest {
         var testFolder = createTestFolder();
         createFiles(testFolder, testFiles);
 
-        var syncer = new Syncer(testFolder);
+        var syncer = new SyncFolder(testFolder);
         var files = syncer.getFiles();
         deleteFolder(testFolder); 
 
@@ -42,7 +43,7 @@ class SyncerTest {
         var testFolder = createTestFolder();
         createFolder(testFolder, testFolderName);
 
-        var syncer = new Syncer(testFolder);
+        var syncer = new SyncFolder(testFolder);
         var folders = syncer.getFolders();
         deleteFolder(testFolder);
 
@@ -55,7 +56,7 @@ class SyncerTest {
         var testFolder = createTestFolder();
         createFolders(testFolder, testFolderNames);
 
-        var syncer = new Syncer(testFolder);
+        var syncer = new SyncFolder(testFolder);
         var folders = syncer.getFolders();
         deleteFolder(testFolder);
 
@@ -68,7 +69,7 @@ class SyncerTest {
         var testFolder = createTestFolder();
         createFolders(testFolder, testFolderNames);
 
-        var syncer = new Syncer(testFolder);
+        var syncer = new SyncFolder(testFolder);
         var folders = syncer.getFolders();
         deleteFolder(testFolder);
 
@@ -83,13 +84,14 @@ class SyncerTest {
         createFolder(testFolder, testFolderName);
         createFiles(testFolder, testInnerFiles);
 
-        var syncer = new Syncer(testFolder);
+        var syncer = new SyncFolder(testFolder);
         var files = syncer.getFiles();
         deleteFolder(testFolder);
 
         assertTrue(listContentsAreEquals(testInnerFiles, files));
     }
 
+    
 
     File createTestFolder() {
         var testFolder = new File("testFolder");

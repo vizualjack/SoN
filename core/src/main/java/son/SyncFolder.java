@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Syncer {
+public class SyncFolder {
     public File syncFolder;
 
-    public Syncer(File syncFolder) {
+    public SyncFolder(File syncFolder) {
         if(!syncFolder.isDirectory()) throw new RuntimeException("I need a folder/directory");
         this.syncFolder = syncFolder;
     }
@@ -18,6 +18,10 @@ public class Syncer {
 
     public List<String> getFiles() {
         return getFiles(syncFolder);
+    }
+
+    public long getLastChangeOfFolder() {
+        return syncFolder.lastModified();
     }
 
     private List<String> getFolders(File folder) {
