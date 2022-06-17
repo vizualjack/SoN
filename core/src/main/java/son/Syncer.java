@@ -19,14 +19,14 @@ public class Syncer {
                     found = true;
                     break;
                 }
-            }   
+            }
             if(!found) sendFiles.add(thisDeviceFile);
         }
 
         for (var otherDeviceFile : otherDeviceFiles) {
             var found = false;
-            for (var sendFile : sendFiles) {
-                if(otherDeviceFile.path.equals(sendFile.path)) {
+            for (var thisDeviceFile : thisDeviceFiles) {
+                if(otherDeviceFile.path.equals(thisDeviceFile.path)) {
                     found = true;
                     break;
                 }
