@@ -1,17 +1,15 @@
-package son;
+package son.compare;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Syncer {
-    public List<MetaFile> sendFiles = new ArrayList<>();
-    public List<MetaFile> receiveFiles = new ArrayList<>();
+import son.MetaFile;
 
-    public Syncer(List<MetaFile> thisDeviceFiles, List<MetaFile> otherDeviceFiles) {
-        compare(thisDeviceFiles, otherDeviceFiles);
-    }
+public class Comparer {
+    public static CompareResult compare(List<MetaFile> thisDeviceFiles, List<MetaFile> otherDeviceFiles) {
+        List<MetaFile> sendFiles = new ArrayList<>();
+        List<MetaFile> receiveFiles = new ArrayList<>();
 
-    private void compare(List<MetaFile> thisDeviceFiles, List<MetaFile> otherDeviceFiles) {
         for (var thisDeviceFile : thisDeviceFiles) {
             var found = false;
             for (var otherDeviceFile : otherDeviceFiles) {
@@ -33,5 +31,7 @@ public class Syncer {
             }
             if(!found) receiveFiles.add(otherDeviceFile);
         }
+
+        return new CompareResult(sendFiles, receiveFiles);
     }
 }

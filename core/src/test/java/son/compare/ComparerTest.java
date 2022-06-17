@@ -1,4 +1,4 @@
-package son;
+package son.compare;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class SyncerTest {
+import son.MetaFile;
+
+public class ComparerTest {
     @Test void sendListFilled() {
        List<MetaFile> thisDeviceFiles = new ArrayList<>() {{
            add(new MetaFile("fiiile1"));
@@ -15,9 +17,9 @@ public class SyncerTest {
        }};        
        List<MetaFile> otherDeviceFiles = new ArrayList<>();
 
-       var syncer = new Syncer(thisDeviceFiles, otherDeviceFiles);
-       assertEquals(thisDeviceFiles, syncer.sendFiles);
-       assertEquals(otherDeviceFiles, syncer.receiveFiles);
+       var compareResult = Comparer.compare(thisDeviceFiles, otherDeviceFiles);
+       assertEquals(thisDeviceFiles, compareResult.sendFiles);
+       assertEquals(otherDeviceFiles, compareResult.receiveFiles);
     }
 
     @Test void receiveListFilled() {
@@ -27,9 +29,9 @@ public class SyncerTest {
             add(new MetaFile("fiiile22"));
         }};
  
-        var syncer = new Syncer(thisDeviceFiles, otherDeviceFiles);
-        assertEquals(thisDeviceFiles, syncer.sendFiles);
-        assertEquals(otherDeviceFiles, syncer.receiveFiles);
+        var compareResult = Comparer.compare(thisDeviceFiles, otherDeviceFiles);
+        assertEquals(thisDeviceFiles, compareResult.sendFiles);
+        assertEquals(otherDeviceFiles, compareResult.receiveFiles);
      }
 
      @Test void sendAndReceiveListNotFilled() {
@@ -45,9 +47,9 @@ public class SyncerTest {
 
         List<MetaFile> emptyList = new ArrayList<>();
  
-        var syncer = new Syncer(thisDeviceFiles, otherDeviceFiles);
-        assertEquals(emptyList, syncer.sendFiles);
-        assertEquals(emptyList, syncer.receiveFiles);
+        var compareResult = Comparer.compare(thisDeviceFiles, otherDeviceFiles);
+        assertEquals(emptyList, compareResult.sendFiles);
+        assertEquals(emptyList, compareResult.receiveFiles);
      }
 
      @Test void sendAndReceiveListFilled() {
@@ -71,8 +73,8 @@ public class SyncerTest {
             add(otherDeviceFiles.get(0));
         }};
  
-        var syncer = new Syncer(thisDeviceFiles, otherDeviceFiles);
-        assertEquals(expectedSendFiles, syncer.sendFiles);
-        assertEquals(expectedReceiveFiles, syncer.receiveFiles);
+        var compareResult = Comparer.compare(thisDeviceFiles, otherDeviceFiles);
+        assertEquals(expectedSendFiles, compareResult.sendFiles);
+        assertEquals(expectedReceiveFiles, compareResult.receiveFiles);
      }
 }
