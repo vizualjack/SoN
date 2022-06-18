@@ -17,7 +17,7 @@ public class ComparerTest {
        }};        
        List<MetaFile> otherDeviceFiles = new ArrayList<>();
 
-       var compareResult = Comparer.compare(thisDeviceFiles, otherDeviceFiles);
+       var compareResult = Comparer.compareFiles(thisDeviceFiles, otherDeviceFiles);
        assertEquals(thisDeviceFiles, compareResult.sendFiles);
        assertEquals(otherDeviceFiles, compareResult.receiveFiles);
     }
@@ -29,7 +29,7 @@ public class ComparerTest {
             add(new MetaFile("fiiile22"));
         }};
  
-        var compareResult = Comparer.compare(thisDeviceFiles, otherDeviceFiles);
+        var compareResult = Comparer.compareFiles(thisDeviceFiles, otherDeviceFiles);
         assertEquals(thisDeviceFiles, compareResult.sendFiles);
         assertEquals(otherDeviceFiles, compareResult.receiveFiles);
      }
@@ -47,7 +47,7 @@ public class ComparerTest {
 
         List<MetaFile> emptyList = new ArrayList<>();
  
-        var compareResult = Comparer.compare(thisDeviceFiles, otherDeviceFiles);
+        var compareResult = Comparer.compareFiles(thisDeviceFiles, otherDeviceFiles);
         assertEquals(emptyList, compareResult.sendFiles);
         assertEquals(emptyList, compareResult.receiveFiles);
      }
@@ -73,7 +73,7 @@ public class ComparerTest {
             add(otherDeviceFiles.get(0));
         }};
  
-        var compareResult = Comparer.compare(thisDeviceFiles, otherDeviceFiles);
+        var compareResult = Comparer.compareFiles(thisDeviceFiles, otherDeviceFiles);
         assertEquals(expectedSendFiles, compareResult.sendFiles);
         assertEquals(expectedReceiveFiles, compareResult.receiveFiles);
      }

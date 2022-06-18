@@ -6,7 +6,7 @@ import java.util.List;
 import son.MetaFile;
 
 public class Comparer {
-    public static CompareResult compare(List<MetaFile> thisDeviceFiles, List<MetaFile> otherDeviceFiles) {
+    public static CompareResult compareFiles(List<MetaFile> thisDeviceFiles, List<MetaFile> otherDeviceFiles) {
         List<MetaFile> sendFiles = new ArrayList<>();
         List<MetaFile> receiveFiles = new ArrayList<>();
 

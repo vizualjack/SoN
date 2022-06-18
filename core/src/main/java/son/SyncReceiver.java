@@ -18,7 +18,7 @@ public class SyncReceiver {
         try {
             var socketIn = socket.getInputStream();
             DataInputStream dis = new DataInputStream(socketIn);
-            String name = (String)dis.readUTF();
+            String name = dis.readUTF();
             System.out.println("Name received!");
             var fileStream = new FileOutputStream(new File(folder, name));
             var buffer = new byte[16 * 1024];            

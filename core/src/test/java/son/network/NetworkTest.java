@@ -1,20 +1,45 @@
 package son.network;
 
-import java.net.Socket;
-import java.util.function.Function;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 public class NetworkTest {
+    int testPort = 1234;
 
     boolean serverConnected = false,
             clientConnected = false;
 
-    @Test void test() {
-        var server = new Server(1234);
-        server.onConnected = socket -> {serverConnected = true; return true;};
+    @Test void simpleConnectionTest() {
+        var server = new Server(testPort);
+        server.onConnected = socket -> {serverConnected = true;};
+        server.start();
 
-        var client = new Client(1234);
-        client.onConnected = socket -> {clientConnected = true; return true;};
+        var client = new Client(testPort);
+        client.onConnected = socket -> {clientConnected = true;};
+        client.connect();
+
+        assertTrue(serverConnected);
+        assertTrue(clientConnected);
+    }
+
+    @Test void simpleEndpointTest() {
+        String testMsg = "tetteteete";
+
+        var server = new Server(testPort);
+        server.onConnected = s -> {
+            var clientEnd = new SimpleEndpoint(s);
+            clientEnd.send(testMsg);
+        };
+        server.start();
+        
+        var client = new Client(testPort);
+        client.onConnected = s -> {
+            var serverEnd = new SimpleEndpoint(s);
+            String receiverMsg = serverEnd.read();
+            assertEquals(testMsg, receiverMsg);
+        };
+        client.connect();
     }
 }

@@ -3,10 +3,10 @@ package son.network;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 public class Server implements Runnable {
-    public Function<Socket,Boolean> onConnected;
+    public Consumer<Socket> onConnected;
 
     int port;
     Thread thread;
@@ -27,7 +27,7 @@ public class Server implements Runnable {
             try {
                 ServerSocket server = new ServerSocket(port);
                 Socket client = server.accept(); 
-                onConnected.apply(client);
+                onConnected.accept(client);
                 server.close();
             }
             catch(IOException ex) {
