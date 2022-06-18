@@ -1,6 +1,8 @@
 package son.network.packet;
 
-public class BasePacket {
+import java.io.Serializable;
+
+public class BasePacket implements Serializable {
     public PacketType packetType;
 
     public BasePacket(PacketType packetType) {
