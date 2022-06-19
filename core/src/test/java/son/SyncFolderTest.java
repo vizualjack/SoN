@@ -1,6 +1,9 @@
 package son;
 
 import org.junit.jupiter.api.Test;
+
+import son.util.TestHelper;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
@@ -20,14 +23,14 @@ class SyncFolderTest {
         System.out.println(testFolder.delete());
         deleteFolder(testFolder);
 
-        assertEquals(testFileName, files.get(0));
+        assertEquals(testFileName, files.get(0).getName());
     }
 
     @Test void findAllFilesInSyncFolder() {
-        var testFiles = Arrays.asList("teeeestFiile", "asdasdww");
+        var testFileNames = Arrays.asList("teeeestFiile", "asdasdww");
 
         var testFolder = createTestFolder();
-        createFiles(testFolder, testFiles);
+        var testFiles = TestHelper.createFiles(testFolder, testFileNames);
 
         var syncer = new SyncFolder(testFolder);
         var files = syncer.getFiles();
@@ -46,33 +49,33 @@ class SyncFolderTest {
         var folders = syncer.getFolders();
         deleteFolder(testFolder);
 
-        assertEquals(testFolderName, folders.get(0));
+        assertEquals(testFolderName, folders.get(0).getName());
     }
 
     @Test void findAllFoldersInSyncFolder() {
         var testFolderNames = Arrays.asList("testFooooolder", "dasdwggrgr");
 
         var testFolder = createTestFolder();
-        createFolders(testFolder, testFolderNames);
+        var createdFolders = TestHelper.createFolders(testFolder, testFolderNames);
 
         var syncer = new SyncFolder(testFolder);
         var folders = syncer.getFolders();
         deleteFolder(testFolder);
 
-        assertTrue(listContentsAreEquals(testFolderNames, folders));
+        assertTrue(listContentsAreEquals(createdFolders, folders));
     }
 
     @Test void findAllFoldersWithInnerFolderInSyncFolder() {
         var testFolderNames = Arrays.asList("testFooooolder", "testFooooolder\\innerFooolder", "dasdwggrgr", "dasdwggrgr\\innerFooolder");
 
         var testFolder = createTestFolder();
-        createFolders(testFolder, testFolderNames);
+        var createdFolders = TestHelper.createFolders(testFolder, testFolderNames);
 
         var syncer = new SyncFolder(testFolder);
         var folders = syncer.getFolders();
         deleteFolder(testFolder);
 
-        assertTrue(listContentsAreEquals(testFolderNames, folders));
+        assertTrue(listContentsAreEquals(createdFolders, folders));
     }
 
     @Test void findAllInnerFilesInSyncFolder() {
@@ -81,13 +84,13 @@ class SyncFolderTest {
 
         var testFolder = createTestFolder();
         createFolder(testFolder, testFolderName);
-        createFiles(testFolder, testInnerFiles);
+        var createdFiles = TestHelper.createFiles(testFolder, testInnerFiles);
 
         var syncer = new SyncFolder(testFolder);
         var files = syncer.getFiles();
         deleteFolder(testFolder);
 
-        assertTrue(listContentsAreEquals(testInnerFiles, files));
+        assertTrue(listContentsAreEquals(createdFiles, files));
     }
 
     
@@ -130,12 +133,12 @@ class SyncFolderTest {
         }
     }
 
-    private boolean listContentsAreEquals(List<String> listOne, List<String> listTwo) {
+    private boolean listContentsAreEquals(List<File> listOne, List<File> listTwo) {
         if(listOne.size() != listTwo.size()) return false;
-        for (String one : listOne) {
+        for (File one : listOne) {
             boolean foundInListTwo = false;
-            for (String two : listTwo) {
-                if(one.equals(two)) {
+            for (File two : listTwo) {
+                if(one.getName().equals(two.getName())) {
                     foundInListTwo = true;
                     break;
                 }

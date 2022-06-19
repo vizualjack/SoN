@@ -5,49 +5,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SyncFolder {
-    public File syncFolder;
+    public File folder;
 
     public SyncFolder(File syncFolder) {
         if(!syncFolder.isDirectory()) throw new RuntimeException("I need a folder/directory");
-        this.syncFolder = syncFolder;
+        this.folder = syncFolder;
     }
 
-    public List<String> getFolders() {
-        return getFolders(syncFolder);
+    public List<File> getFolders() {
+        return getFolders(folder);
     }
 
-    public List<String> getFiles() {
-        return getFiles(syncFolder);
+    public List<File> getFiles() {
+        return getFiles(folder);
     }
 
     public long getLastChangeOfFolder() {
-        return syncFolder.lastModified();
+        return folder.lastModified();
     }
 
-    private List<String> getFolders(File folder) {
-        var paths = new ArrayList<String>();
+    private List<File> getFolders(File folder) {
+        var folders = new ArrayList<File>();
         for (var fileInFolder : folder.listFiles()) {
             if(fileInFolder.isDirectory()) {
-                paths.add(relativePathFromSyncFolder(fileInFolder));
-                paths.addAll(getFolders(fileInFolder));
+                folders.add(fileInFolder);
+                folders.addAll(getFolders(fileInFolder));
             }
         }        
-        return paths;
+        return folders;
     }
 
-    private List<String> getFiles(File folder) {
-        var paths = new ArrayList<String>();
+    private List<File> getFiles(File folder) {
+        var files = new ArrayList<File>();
         for (var fileInFolder : folder.listFiles()) {
             if(fileInFolder.isFile())
-                paths.add(relativePathFromSyncFolder(fileInFolder));
+                files.add(fileInFolder);
             else if (fileInFolder.isDirectory())
-                paths.addAll(getFiles(fileInFolder));
+                files.addAll(getFiles(fileInFolder));
         }        
-        return paths;
+        return files;
     }
 
     private String relativePathFromSyncFolder(File file) {
         var path = file.toPath().toString();
-        return path.replace(syncFolder.getName() + "\\", "");
+        return path.replace(folder.getName() + "/", "");
     }
 }

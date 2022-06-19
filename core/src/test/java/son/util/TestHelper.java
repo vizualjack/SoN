@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Random;
 
 public class TestHelper {
 
@@ -72,23 +76,46 @@ public class TestHelper {
         return false;
     }
 
-    public static boolean createFiles(File folder, List<String> fileNames) {
+    public static List<File> createFiles(File folder, List<String> fileNames) {
+        List<File> files = new ArrayList<>();
         for (String fileName : fileNames) {
-            if(createFile(folder, fileName) == null) 
-                return false;
+            File createdFile = createFile(folder, fileName);
+            if(createdFile == null) return null;
+            files.add(createdFile);
         }
-        return true;
+        return files;
     }
 
-    public static boolean createFolder(File folder, String folderName) {
-        return new File(folder, folderName).mkdir();
+    public static File createFolder(File folder, String folderName) {
+        var createdFolder = new File(folder, folderName);
+        if(!createdFolder.mkdir()) return null;
+        return createdFolder;
     }
 
-    public static boolean createFolders(File folder, List<String> folderNames) {
+    public static List<File> createFolders(File folder, List<String> folderNames) {
+        List<File> folders = new ArrayList<>();
         for (String folderName : folderNames) {
-            if(!createFolder(folder, folderName))
-                return false;
+            var createdFolder = createFolder(folder, folderName);
+            if(createdFolder == null) return null;
+            folders.add(createdFolder);
         }
-        return true;
+        return folders;
+    }
+
+    public static void createRandomFilesWithContentInFolder(File folder) {
+        int numOfFiles = new Random(new GregorianCalendar().getTimeInMillis()).nextInt(10);
+        for(int i = 0; i < numOfFiles; i++) {
+            createFileAndFillWithContent(folder, randomString(10), randomString(100));
+        }
+    }
+
+    private static String randomString(int maxLength) {
+        Random random = new Random(new GregorianCalendar().getTimeInMillis());
+        StringBuilder sb = new StringBuilder();
+        int length = random.nextInt(maxLength);
+        for(int i = 0; i < length; i++) {
+            sb.append(random.nextInt(255));
+        }
+        return sb.toString();
     }
 }
