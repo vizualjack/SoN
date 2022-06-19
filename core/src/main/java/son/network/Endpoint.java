@@ -21,14 +21,16 @@ public class Endpoint {
         this.socket = socket;
     }
 
-    public boolean receiveFile(String filePath) {
+    public boolean receiveFile(File file) {
         try {
             var socketIn = socket.getInputStream();
-            var fileStream = new FileOutputStream(new File(filePath));
+            var fileStream = new FileOutputStream(file);
             int count;
             while((count = socketIn.read(buffer)) > 0) {
                 fileStream.write(buffer, 0, count);
             }
+            fileStream.flush();
+            fileStream.close();
             return true;
         }
         catch(IOException ex) {
@@ -45,6 +47,7 @@ public class Endpoint {
             while((count = fileStream.read(buffer)) > 0) {
                 socketOut.write(buffer, 0, count);
             }
+            socketOut.flush();
             fileStream.close();
             return true;
         }

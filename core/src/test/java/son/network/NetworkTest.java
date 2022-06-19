@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.io.FileReader;
+
+import org.checkerframework.checker.units.qual.degrees;
 import org.junit.jupiter.api.Test;
 
 import son.network.packet.BasePacket;
@@ -116,7 +120,26 @@ public class NetworkTest {
         var senderFolder = TestHelper.createTestFolder("senderFol");
         var receiverFolder = TestHelper.createTestFolder("receiverFol");
 
-        var senderTestFile = TestHelper.createFile(senderFolder, "testFiiile");
+        var senderTestFile = TestHelper.createFileAndFillWithContent(senderFolder, "testFiiile", "this is just a test");
         assertNotNull(senderTestFile);
+
+        var server = new Server(testPort);
+        server.onConnected = s -> {
+            var endpoint = new Endpoint(s);
+            endpoint.sendFile(senderTestFile);
+        };
+        server.start();
+
+        var client = new Client(testPort);
+        client.onConnected = s -> {
+            var endpoint = new Endpoint(s);
+            var receivedFile = new File(receiverFolder, senderTestFile.getName());
+            assertTrue(endpoint.receiveFile(receivedFile));
+            assertEquals(TestHelper.readFromFile(receivedFile), TestHelper.readFromFile(senderTestFile));
+        };
+        client.connect();
+
+        TestHelper.deleteFolder(senderFolder);
+        TestHelper.deleteFolder(receiverFolder);
     }
 }

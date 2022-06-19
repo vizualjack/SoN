@@ -28,6 +28,7 @@ public class Server implements Runnable {
                 ServerSocket server = new ServerSocket(port);
                 Socket client = server.accept(); 
                 onConnected.accept(client);
+                client.close();
                 server.close();
             }
             catch(IOException ex) {

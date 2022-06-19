@@ -1,11 +1,30 @@
 package son.util;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
 public class TestHelper {
+
+    public static String readFromFile(File file) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            var fileReader = new FileReader(file);
+            var buffer = new char[16*1024];
+            int count;
+            while((count = fileReader.read(buffer)) > 0) {
+                sb.append(buffer, 0, count);
+            }
+            fileReader.close();
+        }
+        catch(IOException ex) {
+            ex.printStackTrace();
+        }
+        return sb.toString();
+    }
+
     public static File createTestFolder(String folderName) {
         var testFolder = new File(folderName);
         testFolder.mkdir();
@@ -20,10 +39,12 @@ public class TestHelper {
         return folder.delete();
     }
 
-    public static boolean createFileAndFillWithContent(File folder, String fileName, String content) {
+    public static File createFileAndFillWithContent(File folder, String fileName, String content) {
         File file = createFile(folder, fileName);
-        if(file == null) return false;
-        return writeInFile(file, content);
+        if(file != null) {
+            if(!writeInFile(file, content)) return null;
+        }
+        return file;
     }
 
     public static File createFile(File folder, String fileName) {
