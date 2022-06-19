@@ -6,6 +6,9 @@ import java.net.Socket;
 import son.network.Client;
 import son.network.Endpoint;
 import son.network.Server;
+import son.network.packet.BasePacket;
+import son.network.packet.FilePacket;
+import son.network.packet.PacketType;
 
 public class Syncer {
     int port = 1337;
@@ -22,6 +25,9 @@ public class Syncer {
         this.syncFolder = syncFolder;
         server = new Server(port);
         server.onConnected = s -> connectedToClient(s);
+    }
+
+    public void startServer() {
         server.start();
     }
 
@@ -32,19 +38,44 @@ public class Syncer {
     }
 
     void connectedToServer(Socket socket) {
+        System.out.println("Connected to server");
         var endpoint = new Endpoint(socket);
         endpoint.sendString(testPw);
-        var fileName = endpoint.readString();
-        var file = new File(syncFolder.folder, fileName);
-        endpoint.receiveFile(file);
+
+        BasePacket packet;
+        while((packet = endpoint.read()) != null) {
+            System.out.println("packet received");
+            if(packet.packetType == PacketType.END_OF_SYNC) return;
+            if(packet.packetType == PacketType.FILE) {
+                System.out.println("File packet received");
+                var filePacket = (FilePacket)packet;
+                var file = new File(syncFolder.folder, filePacket.getFilePath());
+                endpoint.send(new BasePacket(PacketType.SEND_FILE));
+                System.out.println("Receiving file");
+                endpoint.receiveFile(file);
+                System.out.println("File received");
+            }
+        }
     }
     
     void connectedToClient(Socket socket) {
+        System.out.println("Connected to client");
         var endpoint = new Endpoint(socket);
         var clientPw = endpoint.readString();
         if(!testPw.equals(clientPw)) return;
-        var file = syncFolder.getFiles().get(0);
-        endpoint.sendString(file.getName());
-        endpoint.sendFile(file);
+
+        for (var file : syncFolder.getFiles()) {
+            System.out.println("Sending filepacket");
+            endpoint.send(new FilePacket(file.getName()));
+            System.out.println("wait for start send file");
+            var packet = endpoint.read();
+            if(packet.packetType == PacketType.SEND_FILE){
+                System.out.println("sending file");
+                endpoint.sendFile(file);
+                System.out.println("file sent");
+            }
+        }
+
+        endpoint.send(new BasePacket(PacketType.END_OF_SYNC));
     }
 }

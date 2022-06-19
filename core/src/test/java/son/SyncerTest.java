@@ -6,14 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.List;
-import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
 import son.util.TestHelper;
 
 public class SyncerTest {
-    @Test void easySyncTest() {
+    @Test void easySyncTest() throws InterruptedException {
         var testFileName = "testFiiillee";
         var testFileContent = "asdasdwoad aw dao wdpawdkosd ";
 
@@ -21,8 +20,10 @@ public class SyncerTest {
         var senderTestFile = TestHelper.createFileAndFillWithContent(senderFolder, testFileName, testFileContent);
         assertNotNull(senderTestFile);
         var receiverFolder = TestHelper.createTestFolder("receiverFol");
-        /*var syncerWithFiles = */new Syncer(senderFolder);
+        var syncerWithFiles = new Syncer(senderFolder);
         var syncerWithNoFiles = new Syncer(receiverFolder);
+        assertEquals(1, syncerWithFiles.syncFolder.getFiles().size());
+        syncerWithFiles.startServer();
         syncerWithNoFiles.sync();
 
         List<File> files = syncerWithNoFiles.syncFolder.getFiles();
@@ -37,15 +38,13 @@ public class SyncerTest {
     }
 
     @Test void multipleFilesSyncTest() {
-        var testFileName = "testFiiillee";
-        var testFileContent = "asdasdwoad aw dao wdpawdkosd ";
-
         var senderFolder = TestHelper.createTestFolder("senderFol");
-        var senderTestFile = TestHelper.createFileAndFillWithContent(senderFolder, testFileName, testFileContent);
-        assertNotNull(senderTestFile);
+        TestHelper.createRandomFilesWithContentInFolder(senderFolder);
         var receiverFolder = TestHelper.createTestFolder("receiverFol");
-        /*var syncerWithFiles = */new Syncer(senderFolder);
+        var syncerWithFiles = new Syncer(senderFolder);
         var syncerWithNoFiles = new Syncer(receiverFolder);
+        assertTrue(syncerWithFiles.syncFolder.getFiles().size() > 0);
+        syncerWithFiles.startServer();
         syncerWithNoFiles.sync();
 
         assertTrue(compareSyncFolders(senderFolder, receiverFolder));

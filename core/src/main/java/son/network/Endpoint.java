@@ -15,7 +15,6 @@ import son.network.packet.BasePacket;
 public class Endpoint {
     Socket socket;
     int bufferSize = 16 * 1024;
-    byte[] buffer = new byte[bufferSize];
 
     public Endpoint(Socket socket) {
         this.socket = socket;
@@ -26,10 +25,12 @@ public class Endpoint {
             var socketIn = socket.getInputStream();
             var fileStream = new FileOutputStream(file);
             int count;
+            byte[] buffer = new byte[bufferSize];
             while((count = socketIn.read(buffer)) > 0) {
                 fileStream.write(buffer, 0, count);
+                if(count < bufferSize) break;
             }
-            fileStream.flush();
+            // fileStream.flush();
             fileStream.close();
             return true;
         }
@@ -44,10 +45,11 @@ public class Endpoint {
             var socketOut = socket.getOutputStream();
             var fileStream = new FileInputStream(file);
             int count;
+            byte[] buffer = new byte[bufferSize];
             while((count = fileStream.read(buffer)) > 0) {
                 socketOut.write(buffer, 0, count);
             }
-            socketOut.flush();
+            // socketOut.flush();
             fileStream.close();
             return true;
         }

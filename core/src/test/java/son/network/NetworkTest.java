@@ -53,7 +53,7 @@ public class NetworkTest {
     }
 
     @Test void sendPacketTest() {
-        BasePacket testPacket = new BasePacket(PacketType.NOTMESSAGE);
+        BasePacket testPacket = new BasePacket(PacketType.MESSAGE);
 
         var server = new Server(testPort);
         server.onConnected = s -> {
@@ -73,7 +73,7 @@ public class NetworkTest {
 
     @Test void mixedSendTest() {
         String testMsg = "tetteteete";
-        BasePacket testPacket = new BasePacket(PacketType.NOTMESSAGE);
+        BasePacket testPacket = new BasePacket(PacketType.MESSAGE);
 
         var server = new Server(testPort);
         server.onConnected = s -> {
@@ -134,6 +134,43 @@ public class NetworkTest {
             var receivedFile = new File(receiverFolder, senderTestFile.getName());
             assertTrue(endpoint.receiveFile(receivedFile));
             assertEquals(TestHelper.readFromFile(receivedFile), TestHelper.readFromFile(senderTestFile));
+        };
+        client.connect();
+
+        TestHelper.deleteFolder(senderFolder);
+        TestHelper.deleteFolder(receiverFolder);
+    }
+
+
+    @Test void sendTwoFilesTest() {
+        var senderFolder = TestHelper.createTestFolder("senderFol");
+        var receiverFolder = TestHelper.createTestFolder("receiverFol");
+
+        var senderTestFile = TestHelper.createFileAndFillWithContent(senderFolder, "testFiiile", "this is just a test");
+        var senderTestFile2 = TestHelper.createFileAndFillWithContent(senderFolder, "testFi22iile", "t222his is just a test");
+        assertNotNull(senderTestFile);
+        assertNotNull(senderTestFile2);
+
+        var server = new Server(testPort);
+        server.onConnected = s -> {
+            var endpoint = new Endpoint(s);
+            endpoint.sendFile(senderTestFile);
+            endpoint.sendFile(senderTestFile2);
+        };
+        server.start();
+
+        var client = new Client(testPort);
+        client.onConnected = s -> {
+            var endpoint = new Endpoint(s);
+            var receivedFile = new File(receiverFolder, senderTestFile.getName());
+            assertTrue(endpoint.receiveFile(receivedFile));
+
+            var receivedFile2 = new File(receiverFolder, senderTestFile2.getName());
+            assertTrue(endpoint.receiveFile(receivedFile2));
+
+
+            assertEquals(TestHelper.readFromFile(senderTestFile), TestHelper.readFromFile(receivedFile));
+            assertEquals(TestHelper.readFromFile(senderTestFile2), TestHelper.readFromFile(receivedFile2));
         };
         client.connect();
 

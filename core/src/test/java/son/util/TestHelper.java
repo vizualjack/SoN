@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -103,7 +102,7 @@ public class TestHelper {
     }
 
     public static void createRandomFilesWithContentInFolder(File folder) {
-        int numOfFiles = new Random(new GregorianCalendar().getTimeInMillis()).nextInt(10);
+        int numOfFiles = new Random(new GregorianCalendar().getTimeInMillis()).nextInt(10-1) + 1;
         for(int i = 0; i < numOfFiles; i++) {
             createFileAndFillWithContent(folder, randomString(10), randomString(100));
         }
@@ -112,7 +111,7 @@ public class TestHelper {
     private static String randomString(int maxLength) {
         Random random = new Random(new GregorianCalendar().getTimeInMillis());
         StringBuilder sb = new StringBuilder();
-        int length = random.nextInt(maxLength);
+        int length = random.nextInt(maxLength-1) + 1;
         for(int i = 0; i < length; i++) {
             sb.append(random.nextInt(255));
         }
