@@ -65,7 +65,7 @@ public class SyncerTest {
         for (File file1 : syncFolder1Files) {
             boolean found = false;
             for (File file2 : syncFolder2Files) {
-                if(file1.getName() != file2.getName()) continue;
+                if(!file1.getName().equals(file2.getName())) continue;
                 found = true;
                 var file1Content = TestHelper.readFromFile(file1);
                 var file2Content = TestHelper.readFromFile(file2);
