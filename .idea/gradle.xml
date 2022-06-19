@@ -10,9 +10,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/son" />
-            <option value="$PROJECT_DIR$/sonForAndroid" />
-            <option value="$PROJECT_DIR$/sonForLinux" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/forAndroid" />
+            <option value="$PROJECT_DIR$/forLinux" />
           </set>
         </option>
       </GradleProjectSettings>
