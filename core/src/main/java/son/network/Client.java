@@ -17,7 +17,7 @@ public class Client {
 
     public void connect() {
         try {
-            Socket server = new Socket("localhost", port);
+            Socket server = new Socket("192.168.178.30", port);
             onConnected.accept(server);
             server.close();
         } 
