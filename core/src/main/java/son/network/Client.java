@@ -8,16 +8,16 @@ import java.util.function.Consumer;
 public class Client {
     public Consumer<Socket> onConnected;
 
-    int port;
-    
+    int port;    
+
 
     public Client(int port) {
         this.port = port;
     }
 
-    public void connect() {
+    public void connect(String address) {
         try {
-            Socket server = new Socket("192.168.178.30", port);
+            Socket server = new Socket(address, port);
             onConnected.accept(server);
             server.close();
         } 

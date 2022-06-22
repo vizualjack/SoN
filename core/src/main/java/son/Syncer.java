@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.Socket;
 
 import son.network.Client;
+import son.network.ClientHolder;
 import son.network.Endpoint;
 import son.network.Server;
 import son.network.packet.BasePacket;
@@ -14,6 +15,7 @@ public class Syncer {
     int port = 1337;
     Server server;
     SyncFolder syncFolder;
+    ClientHolder clientHolder;
 
     private String testPw = "askdalwdijef";
 
@@ -25,6 +27,8 @@ public class Syncer {
         this.syncFolder = syncFolder;
         server = new Server(port);
         server.onConnected = s -> connectedToClient(s);
+        clientHolder = new ClientHolder(port);
+        clientHolder.start();
     }
 
     public void startServer() {
@@ -32,9 +36,11 @@ public class Syncer {
     }
 
     public void sync() {
+        String clientAddress = clientHolder.getClient();
+        if(clientAddress == null) return;
         Client client = new Client(port);
         client.onConnected = s -> connectedToServer(s);
-        client.connect();
+        client.connect(clientAddress);
     }
 
     void connectedToServer(Socket socket) {
@@ -79,7 +85,6 @@ public class Syncer {
             if(endpoint.read().packetType == PacketType.READY)
                 System.out.println("ready packet received");
         }
-
         endpoint.send(new BasePacket(PacketType.END_OF_SYNC));
     }
 }

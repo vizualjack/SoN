@@ -27,7 +27,7 @@ public class NetworkTest {
 
         var client = new Client(testPort);
         client.onConnected = socket -> {clientConnected = true;};
-        client.connect();
+        client.connect("localhost");
 
         assertTrue(serverConnected);
         assertTrue(clientConnected);
@@ -49,7 +49,7 @@ public class NetworkTest {
             String receiverMsg = serverEnd.readString();
             assertEquals(testMsg, receiverMsg);
         };
-        client.connect();
+        client.connect("localhost");
     }
 
     @Test void sendPacketTest() {
@@ -68,7 +68,7 @@ public class NetworkTest {
             BasePacket receiverPacket = serverEnd.read();
             assertEquals(testPacket.packetType, receiverPacket.packetType);
         };
-        client.connect();
+        client.connect("localhost");
     }
 
     @Test void mixedSendTest() {
@@ -91,7 +91,7 @@ public class NetworkTest {
             assertEquals(testMsg, receiverMsg);
             assertEquals(testPacket.packetType, receiverPacket.packetType);
         };
-        client.connect();
+        client.connect("localhost");
     }
 
     @Test void messagePacketTest() {
@@ -111,7 +111,7 @@ public class NetworkTest {
             assertEquals(testPacket.packetType, receiverPacket.packetType);
             assertEquals(testPacket.getMessage(), receiverPacket.getMessage());
         };
-        client.connect();
+        client.connect("localhost");
     }
 
     @Test void sendFileTest() {
@@ -135,7 +135,7 @@ public class NetworkTest {
             assertTrue(endpoint.receiveFile(receivedFile, receivedFile.length()));
             assertEquals(TestHelper.readFromFile(receivedFile), TestHelper.readFromFile(senderTestFile));
         };
-        client.connect();
+        client.connect("localhost");
 
         TestHelper.deleteFolder(senderFolder);
         TestHelper.deleteFolder(receiverFolder);
@@ -172,7 +172,7 @@ public class NetworkTest {
             assertEquals(TestHelper.readFromFile(senderTestFile), TestHelper.readFromFile(receivedFile));
             assertEquals(TestHelper.readFromFile(senderTestFile2), TestHelper.readFromFile(receivedFile2));
         };
-        client.connect();
+        client.connect("localhost");
 
         TestHelper.deleteFolder(senderFolder);
         TestHelper.deleteFolder(receiverFolder);

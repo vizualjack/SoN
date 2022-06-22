@@ -27,6 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import son.Syncer;
+import son.network.ClientHolder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,8 +37,19 @@ public class MainActivity extends AppCompatActivity {
     Button btn;
     TextView text;
 
+    Syncer syncer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Thread thread = new Thread(() -> {
+            File dataFolder = getBaseContext().getDataDir();
+            File syncFolder = new File(dataFolder, "sync");
+            if(!syncFolder.exists()) syncFolder.mkdir();
+            syncer = new Syncer(syncFolder);
+        });
+
+        thread.start();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         text = (TextView) findViewById(R.id.testText);
@@ -45,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sync();
+                askPermissionAndBrowseFile();
+                //sync();
             }
         });
     }
@@ -53,19 +66,26 @@ public class MainActivity extends AppCompatActivity {
     private void askPermissionAndBrowseFile()  {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             int permission = ActivityCompat.checkSelfPermission(getBaseContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    Manifest.permission.INTERNET);
 
             if (permission != PackageManager.PERMISSION_GRANTED ) {
-                this.requestPermissions(
+                /*this.requestPermissions(
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                 Manifest.permission.INTERNET,
                                 Manifest.permission.ACCESS_NETWORK_STATE},
                         MY_REQUEST_CODE_PERMISSION
+                );*/
+
+                this.requestPermissions(
+                        new String[]{Manifest.permission.INTERNET},
+                        MY_REQUEST_CODE_PERMISSION
                 );
+
                 return;
             }
         }
-        doBrowseFile();
+        //doBrowseFile();
+        sync();
     }
 
     private void doBrowseFile()  {
@@ -139,11 +159,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void sync() {
         Thread thread = new Thread(() -> {
-            File dataFolder = getBaseContext().getDataDir();
+            /*File dataFolder = getBaseContext().getDataDir();
             File syncFolder = new File(dataFolder, "sync");
-            if(!syncFolder.exists()) syncFolder.mkdir();
+            if(!syncFolder.exists()) syncFolder.mkdir();*/
             System.out.println("start syncing");
-            new Syncer(syncFolder).sync();
+            syncer.sync();
             System.out.println("sync done");
         });
 
