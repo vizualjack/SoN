@@ -132,7 +132,7 @@ public class NetworkTest {
         client.onConnected = s -> {
             var endpoint = new Endpoint(s);
             var receivedFile = new File(receiverFolder, senderTestFile.getName());
-            assertTrue(endpoint.receiveFile(receivedFile));
+            assertTrue(endpoint.receiveFile(receivedFile, receivedFile.length()));
             assertEquals(TestHelper.readFromFile(receivedFile), TestHelper.readFromFile(senderTestFile));
         };
         client.connect();
@@ -163,10 +163,10 @@ public class NetworkTest {
         client.onConnected = s -> {
             var endpoint = new Endpoint(s);
             var receivedFile = new File(receiverFolder, senderTestFile.getName());
-            assertTrue(endpoint.receiveFile(receivedFile));
+            assertTrue(endpoint.receiveFile(receivedFile, receivedFile.length()));
 
             var receivedFile2 = new File(receiverFolder, senderTestFile2.getName());
-            assertTrue(endpoint.receiveFile(receivedFile2));
+            assertTrue(endpoint.receiveFile(receivedFile2, receivedFile2.length()));
 
 
             assertEquals(TestHelper.readFromFile(senderTestFile), TestHelper.readFromFile(receivedFile));

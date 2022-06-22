@@ -52,8 +52,9 @@ public class Syncer {
                 var file = new File(syncFolder.folder, filePacket.getFilePath());
                 endpoint.send(new BasePacket(PacketType.SEND_FILE));
                 System.out.println("Receiving file");
-                endpoint.receiveFile(file);
+                endpoint.receiveFile(file, filePacket.getSize());
                 System.out.println("File received");
+                endpoint.send(new BasePacket(PacketType.READY));
             }
         }
     }
@@ -66,7 +67,7 @@ public class Syncer {
 
         for (var file : syncFolder.getFiles()) {
             System.out.println("Sending filepacket");
-            endpoint.send(new FilePacket(file.getName()));
+            endpoint.send(new FilePacket(file.getName(), file.length()));
             System.out.println("wait for start send file");
             var packet = endpoint.read();
             if(packet.packetType == PacketType.SEND_FILE){
@@ -74,6 +75,9 @@ public class Syncer {
                 endpoint.sendFile(file);
                 System.out.println("file sent");
             }
+            System.out.println("wait for ready packet");
+            if(endpoint.read().packetType == PacketType.READY)
+                System.out.println("ready packet received");
         }
 
         endpoint.send(new BasePacket(PacketType.END_OF_SYNC));

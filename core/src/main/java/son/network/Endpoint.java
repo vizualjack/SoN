@@ -20,15 +20,17 @@ public class Endpoint {
         this.socket = socket;
     }
 
-    public boolean receiveFile(File file) {
+    public boolean receiveFile(File file, long size) {
         try {
             var socketIn = socket.getInputStream();
             var fileStream = new FileOutputStream(file);
             int count;
             byte[] buffer = new byte[bufferSize];
+            long received = 0L;
             while((count = socketIn.read(buffer)) > 0) {
                 fileStream.write(buffer, 0, count);
-                if(count < bufferSize) break;
+                received += count;
+                if(received >= size) break;
             }
             // fileStream.flush();
             fileStream.close();
