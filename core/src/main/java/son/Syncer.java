@@ -6,6 +6,7 @@ import java.net.Socket;
 import son.network.Client;
 import son.network.ClientHolder;
 import son.network.Endpoint;
+import son.network.NetworkClientHolder;
 import son.network.Server;
 import son.network.packet.BasePacket;
 import son.network.packet.FilePacket;
@@ -23,15 +24,27 @@ public class Syncer {
         this(new SyncFolder(folder));
     }
 
+    public Syncer(File folder, ClientHolder clientHolder) {
+        this(new SyncFolder(folder), clientHolder);
+    }
+
     public Syncer(SyncFolder syncFolder) {
         this.syncFolder = syncFolder;
-        server = new Server(port);
-        server.onConnected = s -> connectedToClient(s);
-        clientHolder = new ClientHolder(port);
+        clientHolder = new NetworkClientHolder(port);
+        startServer();
         clientHolder.start();
     }
 
-    public void startServer() {
+    public Syncer(SyncFolder syncFolder, ClientHolder clientHolder) {
+        this.syncFolder = syncFolder;
+        this.clientHolder = clientHolder;
+        startServer();
+        clientHolder.start();
+    }
+
+    private void startServer() {
+        server = new Server(port);
+        server.onConnected = s -> connectedToClient(s);
         server.start();
     }
 

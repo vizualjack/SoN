@@ -9,9 +9,9 @@ import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.Test;
 
-public class ClientHolderTest {
+public class NetworkClientHolderTest {
     @Test void test() throws InterruptedException, UnknownHostException {
-        var ch1 = new ClientHolder(1337);
+        var ch1 = new NetworkClientHolder(1337);
         // var ch2 = new ClientHolder(1337);
         var myAddress = InetAddress.getLocalHost().getHostAddress();
         ch1.start();

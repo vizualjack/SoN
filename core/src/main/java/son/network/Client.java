@@ -20,7 +20,7 @@ public class Client {
             Socket server = new Socket(address, port);
             onConnected.accept(server);
             server.close();
-        } 
+        }
         catch(UnknownHostException ex) {
             System.err.println("unknown host, change it");
         }
