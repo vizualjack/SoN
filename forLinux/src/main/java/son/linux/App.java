@@ -8,6 +8,17 @@ public class App {
         var f = new File("testFolder");
         f.mkdir();
         var syncer = new Syncer(f);
+
+        while(true) {
+            try {
+                Thread.sleep(60000);
+                System.out.println("Syncing...");
+                syncer.sync();
+            } catch (InterruptedException e) {
+                System.out.println("Thread can't sleep");
+            }
+
+        }
         // syncer.startServer();
 
         // var clientHolder = new ClientHolder(1337);
