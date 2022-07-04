@@ -12,6 +12,14 @@ import java.util.Arrays;
 import java.util.List;
 
 class SyncFolderTest {
+
+    @Test void pathTest() {
+        var syncFolder = new SyncFolder(new File("testFolder"));
+        var metaFiles = syncFolder.getMetaFiles();
+        assertEquals(1, metaFiles.size());
+        assertEquals("hallo im a datei", metaFiles.get(0).path);
+    }
+
     @Test void findFileInSyncFolder() {
         var testFileName = "teeeestFiile";
 
