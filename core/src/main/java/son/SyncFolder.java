@@ -50,4 +50,16 @@ public class SyncFolder {
         var path = file.toPath().toString();
         return path.replace(folder.getName() + "/", "");
     }
+
+    public List<MetaFile> getMetaFiles() {
+        var metaFiles = new ArrayList<MetaFile>();
+        for(var file : getFiles()) {
+            metaFiles.add(new MetaFile(relativePathFromSyncFolder(file), file.lastModified()));
+        }
+        return metaFiles;
+    }
+
+    public File getFileForRelativePath(String filePath) {
+        return new File(folder, filePath);
+    }
 }

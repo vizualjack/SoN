@@ -6,11 +6,12 @@ import java.net.Socket;
 import son.network.Client;
 import son.network.ClientHolder;
 import son.network.Endpoint;
-import son.network.NetworkClientHolder;
 import son.network.Server;
-import son.network.packet.BasePacket;
-import son.network.packet.FilePacket;
-import son.network.packet.PacketType;
+import son.network.packet.LastModifiedPacket;
+import son.network.packet.RolePacket;
+import son.network.packet.RolePacket.Role;
+import son.sync.Receiver;
+import son.sync.Sender;
 
 public class Syncer {
     int port = 1337;
@@ -30,7 +31,7 @@ public class Syncer {
 
     public Syncer(SyncFolder syncFolder) {
         this.syncFolder = syncFolder;
-        clientHolder = new NetworkClientHolder(port);
+        clientHolder = new ClientHolder(port);
         startServer();
         clientHolder.start();
     }
@@ -49,55 +50,45 @@ public class Syncer {
     }
 
     public void sync() {
-        String clientAddress = clientHolder.getClient();
-        if(clientAddress == null) return;
-        Client client = new Client(port);
-        client.onConnected = s -> connectedToServer(s);
-        client.connect(clientAddress);
+        for(var clientAddress : clientHolder.getClients()) {
+            Client client = new Client(port);
+            client.onConnected = s -> connectedToServer(s);
+            client.connect(clientAddress);
+            if(client.timedOut) clientHolder.remove(clientAddress);
+        }
     }
 
     void connectedToServer(Socket socket) {
         System.out.println("Connected to server");
         var endpoint = new Endpoint(socket);
-        endpoint.sendString(testPw);
+        endpoint.send(new LastModifiedPacket(syncFolder.getLastChangeOfFolder()));
 
-        BasePacket packet;
-        while((packet = endpoint.read()) != null) {
-            System.out.println("packet received");
-            if(packet.packetType == PacketType.END_OF_SYNC) return;
-            if(packet.packetType == PacketType.FILE) {
-                System.out.println("File packet received");
-                var filePacket = (FilePacket)packet;
-                var file = new File(syncFolder.folder, filePacket.getFilePath());
-                endpoint.send(new BasePacket(PacketType.SEND_FILE));
-                System.out.println("Receiving file");
-                endpoint.receiveFile(file, filePacket.getSize());
-                System.out.println("File received");
-                endpoint.send(new BasePacket(PacketType.READY));
-            }
+        var rolePacket = (RolePacket) endpoint.read();
+        var role = rolePacket.getRole();
+
+        if(role == Role.RECEIVER) {
+            new Receiver(endpoint, syncFolder);
+        }
+        else {
+            new Sender(endpoint, syncFolder);
         }
     }
     
     void connectedToClient(Socket socket) {
         System.out.println("Connected to client");
         var endpoint = new Endpoint(socket);
-        var clientPw = endpoint.readString();
-        if(!testPw.equals(clientPw)) return;
+        clientHolder.addToClients(socket.getInetAddress().getHostAddress());
+        var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
+        var lastModifiedClient = lastModifiedPacket.getLastModified();
+        var lastModified = syncFolder.getLastChangeOfFolder();
 
-        for (var file : syncFolder.getFiles()) {
-            System.out.println("Sending filepacket");
-            endpoint.send(new FilePacket(file.getName(), file.length()));
-            System.out.println("wait for start send file");
-            var packet = endpoint.read();
-            if(packet.packetType == PacketType.SEND_FILE){
-                System.out.println("sending file");
-                endpoint.sendFile(file);
-                System.out.println("file sent");
-            }
-            System.out.println("wait for ready packet");
-            if(endpoint.read().packetType == PacketType.READY)
-                System.out.println("ready packet received");
+        if(lastModified > lastModifiedClient) {
+            endpoint.send(new RolePacket(Role.RECEIVER));
+            new Sender(endpoint, syncFolder);
         }
-        endpoint.send(new BasePacket(PacketType.END_OF_SYNC));
+        else {
+            endpoint.send(new RolePacket(Role.SENDER));
+            new Receiver(endpoint, syncFolder);
+        }
     }
 }
