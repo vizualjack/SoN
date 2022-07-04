@@ -2,6 +2,8 @@ package son;
 
 import java.io.File;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import son.network.Client;
 import son.network.ClientHolder;
@@ -18,6 +20,8 @@ public class Syncer {
     Server server;
     SyncFolder syncFolder;
     ClientHolder clientHolder;
+
+    List<String> syncingClients = new ArrayList<>();
 
     private String testPw = "askdalwdijef";
 
@@ -61,6 +65,10 @@ public class Syncer {
     void connectedToServer(Socket socket) {
         System.out.println("Connected to server");
         var endpoint = new Endpoint(socket);
+        var address = socket.getInetAddress().getHostAddress();
+        if(syncingClients.contains(address)) return;
+        syncingClients.add(address);
+
         endpoint.send(new LastModifiedPacket(syncFolder.getLastChangeOfFolder()));
 
         var rolePacket = (RolePacket) endpoint.read();
@@ -72,11 +80,17 @@ public class Syncer {
         else {
             new Sender(endpoint, syncFolder);
         }
+
+        syncingClients.remove(address);
     }
     
     void connectedToClient(Socket socket) {
         System.out.println("Connected to client");
         var endpoint = new Endpoint(socket);
+        var address = socket.getInetAddress().getHostAddress();
+        if(syncingClients.contains(address)) return;
+        syncingClients.add(address);
+
         clientHolder.addToClients(socket.getInetAddress().getHostAddress());
         var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
         var lastModifiedClient = lastModifiedPacket.getLastModified();
@@ -90,5 +104,7 @@ public class Syncer {
             endpoint.send(new RolePacket(Role.SENDER));
             new Receiver(endpoint, syncFolder);
         }
+
+        syncingClients.remove(address);
     }
 }
