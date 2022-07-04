@@ -1,8 +1,8 @@
 package son;
 
-import java.io.File;
+import java.io.Serializable;
 
-public class MetaFile {
+public class MetaFile implements Serializable {
     public String path;
     public long lastModified;
 
