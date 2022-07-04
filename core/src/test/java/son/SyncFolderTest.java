@@ -14,7 +14,9 @@ import java.util.List;
 class SyncFolderTest {
 
     @Test void pathTest() {
-        var syncFolder = new SyncFolder(new File("testFolder"));
+        var f = new File("C:\\Users\\disabled computer\\Documents\\testFolder");
+        f.mkdir();
+        var syncFolder = new SyncFolder(f);
         var metaFiles = syncFolder.getMetaFiles();
         assertEquals(1, metaFiles.size());
         assertEquals("hallo im a datei", metaFiles.get(0).path);

@@ -48,7 +48,8 @@ public class SyncFolder {
 
     private String relativePathFromSyncFolder(File file) {
         var path = file.toPath().toString();
-        return path.replace(folder.getName() + "/", "");
+        var pathParts = path.split(folder.getName());
+        return pathParts[pathParts.length-1].substring(1);
     }
 
     public List<MetaFile> getMetaFiles() {
