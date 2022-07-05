@@ -39,9 +39,11 @@ public class ClientHolder implements Runnable{
         }
     }
 
-    public void addToClients(byte[] address) {
-        if(!clients.contains(address))
-            clients.add(address);
+    public void addToClients(byte[] addr) {
+        for(var clientAddr : clients) {
+            if(InetAddressHelper.compareAddresses(clientAddr, addr)) return;
+        }
+        clients.add(addr);
     }
 
     public List<byte[]> getClients() {

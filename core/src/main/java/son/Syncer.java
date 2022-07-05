@@ -93,7 +93,7 @@ public class Syncer {
         var address = socket.getInetAddress().getAddress();
         if(!addToSyncingClients(address)) return;
 
-        clientHolder.addToClients(socket.getInetAddress().getAddress());
+        clientHolder.addToClients(address);
         var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
         var lastModifiedClient = lastModifiedPacket.getLastModified();
         var lastModified = syncFolder.getLastChangeOfFolder();
