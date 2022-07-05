@@ -32,7 +32,7 @@ public class Endpoint {
                 received += count;
                 if(received >= size) break;
             }
-            // fileStream.flush();
+            fileStream.flush();
             fileStream.close();
             return true;
         }
@@ -51,7 +51,7 @@ public class Endpoint {
             while((count = fileStream.read(buffer)) > 0) {
                 socketOut.write(buffer, 0, count);
             }
-            // socketOut.flush();
+            socketOut.flush();
             fileStream.close();
             return true;
         }
