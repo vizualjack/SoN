@@ -8,5 +8,6 @@ public class MetaFile implements Serializable {
 
     public MetaFile(String path, long lastModified) {
         this.path = path;
+        this.lastModified = lastModified;
     }
 }
