@@ -21,7 +21,7 @@ public class Syncer {
     SyncFolder syncFolder;
     ClientHolder clientHolder;
 
-    List<String> syncingClients = new ArrayList<>();
+    List<byte[]> syncingClients = new ArrayList<>();
 
     private String testPw = "askdalwdijef";
 
@@ -65,7 +65,7 @@ public class Syncer {
     void connectedToServer(Socket socket) {
         System.out.println("Connected to server");
         var endpoint = new Endpoint(socket);
-        var address = socket.getInetAddress().getHostAddress();
+        var address = socket.getInetAddress().getAddress();
         if(syncingClients.contains(address)) return;
         syncingClients.add(address);
 
@@ -90,11 +90,11 @@ public class Syncer {
     void connectedToClient(Socket socket) {
         System.out.println("Connected to client");
         var endpoint = new Endpoint(socket);
-        var address = socket.getInetAddress().getHostAddress();
+        var address = socket.getInetAddress().getAddress();
         if(syncingClients.contains(address)) return;
         syncingClients.add(address);
 
-        clientHolder.addToClients(socket.getInetAddress().getHostAddress());
+        clientHolder.addToClients(socket.getInetAddress().getAddress());
         var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
         var lastModifiedClient = lastModifiedPacket.getLastModified();
         var lastModified = syncFolder.getLastChangeOfFolder();

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,20 +22,20 @@ public class NetworkTest {
     boolean serverConnected = false,
             clientConnected = false;
 
-    @Test void simpleConnectionTest() {
+    @Test void simpleConnectionTest() throws UnknownHostException {
         var server = new Server(testPort);
         server.onConnected = socket -> {serverConnected = true;};
         server.start();
 
         var client = new Client(testPort);
         client.onConnected = socket -> {clientConnected = true;};
-        client.connect("localhost");
+        client.connect(InetAddress.getByName("localhost").getAddress());
 
         assertTrue(serverConnected);
         assertTrue(clientConnected);
     }
 
-    @Test void sendStringTest() {
+    @Test void sendStringTest() throws UnknownHostException {
         String testMsg = "tetteteete";
 
         var server = new Server(testPort);
@@ -49,10 +51,10 @@ public class NetworkTest {
             String receiverMsg = serverEnd.readString();
             assertEquals(testMsg, receiverMsg);
         };
-        client.connect("localhost");
+        client.connect(InetAddress.getByName("localhost").getAddress());
     }
 
-    @Test void sendPacketTest() {
+    @Test void sendPacketTest() throws UnknownHostException {
         BasePacket testPacket = new BasePacket(PacketType.MESSAGE);
 
         var server = new Server(testPort);
@@ -68,10 +70,10 @@ public class NetworkTest {
             BasePacket receiverPacket = serverEnd.read();
             assertEquals(testPacket.packetType, receiverPacket.packetType);
         };
-        client.connect("localhost");
+        client.connect(InetAddress.getByName("localhost").getAddress());
     }
 
-    @Test void mixedSendTest() {
+    @Test void mixedSendTest() throws UnknownHostException {
         String testMsg = "tetteteete";
         BasePacket testPacket = new BasePacket(PacketType.MESSAGE);
 
@@ -91,7 +93,7 @@ public class NetworkTest {
             assertEquals(testMsg, receiverMsg);
             assertEquals(testPacket.packetType, receiverPacket.packetType);
         };
-        client.connect("localhost");
+        client.connect(InetAddress.getByName("localhost").getAddress());
     }
 
     @Test void messagePacketTest() {

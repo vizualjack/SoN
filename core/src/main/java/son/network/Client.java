@@ -2,6 +2,7 @@ package son.network;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.function.Consumer;
@@ -19,7 +20,16 @@ public class Client {
 
     public void connect(String address) {
         try {
-            Socket server = new Socket(address, port);
+            connect(InetAddress.getByName(address).getAddress());
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void connect(byte[] address) {
+        try {
+            Socket server = new Socket(InetAddress.getByAddress(address), port);
             onConnected.accept(server);
             server.close();
         }

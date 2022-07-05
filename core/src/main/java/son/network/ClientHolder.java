@@ -4,24 +4,27 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.graph.Network;
 
 public class ClientHolder implements Runnable{
     DatagramSocket udpEndpoint;
     String msg = "hey i'm a son user";
     Thread t;
     int port;
-    List<String> clients;
-    String selfAddress;
+    List<byte[]> clients;
+    byte[] selfAddress;
 
     public ClientHolder(int port) {
         this.port = port;
-        clients = new ArrayList<String>();
+        clients = new ArrayList<byte[]>();
         try {
-            selfAddress = InetAddress.getLocalHost().getHostAddress();
+            getLocalAddress();
             udpEndpoint = new DatagramSocket(port);
         } catch (SocketException | UnknownHostException e) {
             // TODO Auto-generated catch block
@@ -29,12 +32,19 @@ public class ClientHolder implements Runnable{
         }
     }
 
-    public void addToClients(String address) {
+    private void getLocalAddress() throws SocketException, UnknownHostException {
+        try(DatagramSocket s=new DatagramSocket()) {
+            s.connect(InetAddress.getByAddress(new byte[]{1,1,1,1}), 1337);
+            selfAddress = s.getLocalAddress().getAddress();
+        }
+    }
+
+    public void addToClients(byte[] address) {
         if(!clients.contains(address))
             clients.add(address);
     }
 
-    public List<String> getClients() {
+    public List<byte[]> getClients() {
         return clients;
     }
 
@@ -56,8 +66,8 @@ public class ClientHolder implements Runnable{
                 udpEndpoint.receive(packet);
                 System.out.println("packet received");
                 if(new String(packet.getData()).contentEquals(msg)) {
-                    var curAddress = packet.getAddress().getHostAddress();
-                    if(!curAddress.contentEquals(selfAddress)) {
+                    var curAddress = packet.getAddress().getAddress();
+                    if(!InetAddressHelper.compareAddresses(curAddress, selfAddress)) {
                         System.out.println("SoN User found:" + curAddress);
                         addToClients(curAddress);
                     }
@@ -72,7 +82,7 @@ public class ClientHolder implements Runnable{
     private void sendPacketToAll() {
         try {
             var bytes = msg.getBytes();
-            var broadcastAddress = InetAddress.getLocalHost().getAddress();
+            var broadcastAddress = selfAddress.clone();
             broadcastAddress[3] = (byte)255;
             var inetBroadcastAddress = InetAddress.getByAddress(broadcastAddress);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, inetBroadcastAddress, port);
@@ -82,7 +92,7 @@ public class ClientHolder implements Runnable{
         }
     }
 
-    public void remove(String clientAddress) {
+    public void remove(byte[] clientAddress) {
         clients.remove(clientAddress);
     }
 }
