@@ -97,7 +97,8 @@ public class Sender {
             if(!found)
                 fileTransfers.add(new FileTransfer(FileTransfer.Type.DELETE, otherMetaFile.path));
         }
-
+        
+        System.out.println("fileTransfers: " + fileTransfers.size());
         return fileTransfers;
     }
 }
