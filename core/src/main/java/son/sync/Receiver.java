@@ -29,7 +29,7 @@ public class Receiver {
                 endpoint.receiveFile(file, filePacket.getSize());
                 System.out.println("File received");
                 file.setLastModified(filePacket.getLastModified());
-                // endpoint.send(new BasePacket(PacketType.READY));
+                endpoint.send(new BasePacket(PacketType.READY));
             }
         }
     }

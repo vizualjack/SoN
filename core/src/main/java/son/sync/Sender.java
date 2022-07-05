@@ -45,6 +45,10 @@ public class Sender {
                 endpoint.send(new FilePacket(fileTransfer.filePath, file.length(), file.lastModified()));
                 endpoint.sendFile(file);
             }
+            if(endpoint.read().packetType != PacketType.READY) {
+                System.out.println("fail...");
+                break;
+            }
         }
 
         endpoint.send(new BasePacket(PacketType.END_OF_SYNC));
