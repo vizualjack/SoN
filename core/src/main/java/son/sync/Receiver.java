@@ -21,14 +21,18 @@ public class Receiver {
                 System.out.println("File packet received");
                 var filePacket = (FilePacket)packet;
                 var file = new File(syncFolder.folder, filePacket.getFilePath());
-                file.delete();
-                System.out.println("File deleted");
-                if(filePacket.getSize() == 0) continue;
-                // endpoint.send(new BasePacket(PacketType.SEND_FILE));
-                System.out.println("Receiving file");
-                endpoint.receiveFile(file, filePacket.getSize());
-                System.out.println("File received");
-                file.setLastModified(filePacket.getLastModified());
+                
+                if(filePacket.getSize() == 0) {
+                    file.delete();
+                    System.out.println("File deleted");
+                }
+                else {
+                    // endpoint.send(new BasePacket(PacketType.SEND_FILE));
+                    System.out.println("Receiving file");
+                    endpoint.receiveFile(file, filePacket.getSize());
+                    System.out.println("File received");
+                    file.setLastModified(filePacket.getLastModified());
+                }
                 endpoint.send(new BasePacket(PacketType.READY));
             }
         }
