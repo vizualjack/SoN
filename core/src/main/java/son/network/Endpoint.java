@@ -28,11 +28,12 @@ public class Endpoint {
             byte[] buffer = new byte[bufferSize];
             long received = 0L;
             while((count = socketIn.read(buffer)) > 0) {
+                System.out.println("receive count:" + count);
                 fileStream.write(buffer, 0, count);
                 received += count;
                 if(received >= size) break;
             }
-            fileStream.flush();
+            // fileStream.flush();
             fileStream.close();
             return true;
         }
@@ -49,9 +50,10 @@ public class Endpoint {
             int count;
             byte[] buffer = new byte[bufferSize];
             while((count = fileStream.read(buffer)) > 0) {
+                System.out.println("send count:" + count);
                 socketOut.write(buffer, 0, count);
             }
-            socketOut.flush();
+            // socketOut.flush();
             fileStream.close();
             return true;
         }
