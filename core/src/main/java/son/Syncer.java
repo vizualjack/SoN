@@ -99,14 +99,18 @@ public class Syncer {
         var lastModifiedClient = lastModifiedPacket.getLastModified();
         var lastModified = syncFolder.getLastChangeOfFolder();
 
-        if(lastModified > lastModifiedClient) {
-            endpoint.send(new RolePacket(Role.RECEIVER));
-            new Sender(endpoint, syncFolder);
+        if(lastModified != lastModifiedClient) {
+            if(lastModified > lastModifiedClient) {
+                endpoint.send(new RolePacket(Role.RECEIVER));
+                new Sender(endpoint, syncFolder);
+            }
+            else {
+                endpoint.send(new RolePacket(Role.SENDER));
+                new Receiver(endpoint, syncFolder);
+            }
         }
-        else {
-            endpoint.send(new RolePacket(Role.SENDER));
-            new Receiver(endpoint, syncFolder);
-        }
+        else
+            endpoint.send(new RolePacket(Role.NOTHING));
 
         syncingClients.remove(address);
     }
