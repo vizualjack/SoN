@@ -74,11 +74,14 @@ public class Syncer {
         var rolePacket = (RolePacket) endpoint.read();
         var role = rolePacket.getRole();
 
-        if(role == Role.RECEIVER) {
-            new Receiver(endpoint, syncFolder);
-        }
-        else {
-            new Sender(endpoint, syncFolder);
+        switch(role) {
+            case RECEIVER:
+                new Receiver(endpoint, syncFolder);
+                break;
+            case SENDER:
+                new Sender(endpoint, syncFolder);
+                break;
+            default:
         }
 
         syncingClients.remove(address);

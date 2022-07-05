@@ -1,7 +1,7 @@
 package son.network.packet;
 
 public class RolePacket extends BasePacket {
-    public enum Role {SENDER, RECEIVER}
+    public enum Role {SENDER, RECEIVER, NOTHING}
 
     Role role;
 
