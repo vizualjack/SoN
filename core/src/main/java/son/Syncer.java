@@ -8,6 +8,7 @@ import java.util.List;
 import son.network.Client;
 import son.network.ClientHolder;
 import son.network.Endpoint;
+import son.network.InetAddressHelper;
 import son.network.Server;
 import son.network.packet.LastModifiedPacket;
 import son.network.packet.RolePacket;
@@ -66,8 +67,7 @@ public class Syncer {
         System.out.println("Connected to server");
         var endpoint = new Endpoint(socket);
         var address = socket.getInetAddress().getAddress();
-        if(syncingClients.contains(address)) return;
-        syncingClients.add(address);
+        if(!addToSyncingClients(address)) return;
 
         endpoint.send(new LastModifiedPacket(syncFolder.getLastChangeOfFolder()));
 
@@ -84,15 +84,14 @@ public class Syncer {
             default:
         }
 
-        syncingClients.remove(address);
+        removeFromSyncingClients(address);
     }
-    
+
     void connectedToClient(Socket socket) {
         System.out.println("Connected to client");
         var endpoint = new Endpoint(socket);
         var address = socket.getInetAddress().getAddress();
-        if(syncingClients.contains(address)) return;
-        syncingClients.add(address);
+        if(!addToSyncingClients(address)) return;
 
         clientHolder.addToClients(socket.getInetAddress().getAddress());
         var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
@@ -112,6 +111,27 @@ public class Syncer {
         else
             endpoint.send(new RolePacket(Role.NOTHING));
 
-        syncingClients.remove(address);
+        removeFromSyncingClients(address);
+    }
+
+    private boolean addToSyncingClients(byte[] addrToAdd) {
+        for(var addr : syncingClients) {
+            if(InetAddressHelper.compareAddresses(addr, addrToAdd)) {
+                return false;
+            }
+        }
+        syncingClients.add(addrToAdd);
+        return true;
+    }
+
+    private void removeFromSyncingClients(byte[] addrToDelete) {
+        byte[] deleteAddr = null;
+        for(var addr : syncingClients) {
+            if(InetAddressHelper.compareAddresses(addr, addrToDelete)) {
+                deleteAddr = addr;
+                break;
+            }
+        }
+        if(deleteAddr != null) syncingClients.remove(deleteAddr);
     }
 }
