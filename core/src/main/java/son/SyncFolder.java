@@ -23,10 +23,14 @@ public class SyncFolder {
     public long getLastChangeOfFolder() {
         long latestFileChange = 0;
         for(var file : getFiles()) {
-            if(file.lastModified() > latestFileChange)
-                latestFileChange = file.lastModified();
+            if(getLastModifiedRounded(file) > latestFileChange)
+                latestFileChange = getLastModifiedRounded(file);
         }
         return latestFileChange;
+    }
+
+    private long getLastModifiedRounded(File file) {
+        return (file.lastModified()/1000*1000);
     }
 
     private List<File> getFolders(File folder) {
