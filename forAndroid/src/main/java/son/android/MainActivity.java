@@ -46,6 +46,15 @@ public class MainActivity extends AppCompatActivity {
             File syncFolder = new File(dataFolder, "sync");
             if(!syncFolder.exists()) syncFolder.mkdir();
             syncer = new Syncer(syncFolder);
+
+            /*while(true) {
+                try {
+                    Thread.sleep(10000);
+                    syncer.sync();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }*/
         });
 
         thread.start();

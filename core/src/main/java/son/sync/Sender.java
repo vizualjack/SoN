@@ -14,7 +14,7 @@ import son.network.packet.MetaFilesPacket;
 import son.network.packet.PacketType;
 
 public class Sender {
-    private class FileTransfer {
+    private static class FileTransfer {
         enum Type{TRANSFER, DELETE}
         Type type;
         String filePath;
