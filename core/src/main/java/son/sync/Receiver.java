@@ -21,7 +21,7 @@ public class Receiver {
                 System.out.println("File packet received");
                 var filePacket = (FilePacket)packet;
                 var file = new File(syncFolder.folder, filePacket.getFilePath());
-                
+                createFolders(syncFolder.folder, filePacket.getFilePath());
                 if(filePacket.getSize() == 0) {
                     file.delete();
                     System.out.println("File deleted");
@@ -36,5 +36,12 @@ public class Receiver {
                 endpoint.send(new BasePacket(PacketType.READY));
             }
         }
+    }
+
+    private void createFolders(File baseFolder, String filePath) {
+        var lastSlashIndex = filePath.lastIndexOf("\\");
+        if(lastSlashIndex == -1) return;
+        var foldersPath = filePath.substring(0, lastSlashIndex);
+        new File(baseFolder, foldersPath).mkdirs();
     }
 }
