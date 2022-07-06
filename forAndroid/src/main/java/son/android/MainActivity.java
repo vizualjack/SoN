@@ -1,6 +1,7 @@
 package son.android;
 
 import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SyncStatusObserver;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -25,6 +27,9 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.List;
 
 import son.Syncer;
 import son.network.ClientHolder;
@@ -41,12 +46,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+
+        String path = Environment.getExternalStorageDirectory().toString() + "/syyyncFolder";
+        System.out.println(path);
+        File dir = new File(path);
+        System.out.println("mkdir: " + dir.mkdir());
+
         Thread thread = new Thread(() -> {
             File dataFolder = getBaseContext().getDataDir();
             File syncFolder = new File(dataFolder, "sync");
             if(!syncFolder.exists()) syncFolder.mkdir();
-            syncer = new Syncer(syncFolder);
-
+            syncer = new Syncer(syncFolder);;
             /*while(true) {
                 try {
                     Thread.sleep(10000);
@@ -66,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                askPermissionAndBrowseFile();
+                //askPermissionAndBrowseFile();
                 //sync();
             }
         });
@@ -75,31 +86,29 @@ public class MainActivity extends AppCompatActivity {
     private void askPermissionAndBrowseFile()  {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             int permission = ActivityCompat.checkSelfPermission(getBaseContext(),
-                    Manifest.permission.INTERNET);
+                    Manifest.permission.MANAGE_EXTERNAL_STORAGE);
 
             if (permission != PackageManager.PERMISSION_GRANTED ) {
-                /*this.requestPermissions(
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.INTERNET,
-                                Manifest.permission.ACCESS_NETWORK_STATE},
-                        MY_REQUEST_CODE_PERMISSION
-                );*/
-
                 this.requestPermissions(
-                        new String[]{Manifest.permission.INTERNET},
+                        new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},
                         MY_REQUEST_CODE_PERMISSION
                 );
+
+                /*this.requestPermissions(
+                        new String[]{Manifest.permission.INTERNET},
+                        MY_REQUEST_CODE_PERMISSION
+                );*/
 
                 return;
             }
         }
-        //doBrowseFile();
-        sync();
+        doBrowseFile();
+        //sync();
     }
 
     private void doBrowseFile()  {
-        //Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        //startActivityForResult(intent, MY_RESULT_CODE_FILECHOOSER);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        startActivityForResult(intent, MY_RESULT_CODE_FILECHOOSER);
 
         /*registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), new ActivityResultCallback<Uri>() {
             @Override
@@ -143,7 +152,17 @@ public class MainActivity extends AppCompatActivity {
                         Uri fileUri = data.getData();
                         String path = fileUri.getPath().split(":")[1];
                         File file = new File(Environment.getExternalStorageDirectory(), path);
-                        SharedPreferences settings = getApplicationContext().getSharedPreferences("myPrefs", 0);
+                        System.out.println("file: " + file);
+                        System.out.println("canRead: " + file.canRead());
+                        System.out.println("canExecute: " + file.canExecute());
+                        System.out.println("canWrite: " + file.canWrite());
+                        File testTxt = new File(file, "tteest");
+                        try {
+                            System.out.println("createNewFIle: " + testTxt.createNewFile());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        /*SharedPreferences settings = getApplicationContext().getSharedPreferences("myPrefs", 0);
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString("syncPath", file.getPath());
                         editor.apply();
@@ -152,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                             f.createNewFile();
                         } catch (IOException e) {
                             e.printStackTrace();
-                        }
+                        }*/
                         //sync();
                         //String[] fileNames = new File(fileUri.toString()).list();
                         //File[] files = new File(fileUri.toString()).listFiles();
