@@ -2,15 +2,17 @@ package son.pc;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-
-import javax.swing.text.rtf.RTFEditorKit;
+import java.io.IOException;
 
 import son.SyncFile;
 
 public class SyncFilePC extends SyncFile {
 
     public File file;
+    FileInputStream inputStream;
+    FileOutputStream outputStream;
 
     public SyncFilePC(File file) {
         this.file = file;
@@ -23,44 +25,59 @@ public class SyncFilePC extends SyncFile {
 
     @Override
     public long getSize() {
-        // TODO Auto-generated method stub
-        return 0;
+        return file.length();
     }
 
     @Override
     public void delete() {
-        // TODO Auto-generated method stub
-        
+        file.delete();
     }
 
     @Override
     public FileInputStream openInputStream() {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            inputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            System.err.println("Can't found file");
+            e.printStackTrace();
+        }
+        return inputStream;
     }
 
     @Override
     public void closeInputStream() {
-        // TODO Auto-generated method stub
-        
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            System.err.println("Can't close input stream");
+            e.printStackTrace();
+        }
     }
 
     @Override
     public FileOutputStream openOutputStream() {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            outputStream = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            System.err.println("Can't found file");
+            e.printStackTrace();
+        }
+        return outputStream;
     }
 
     @Override
     public void closeOutputStream() {
-        // TODO Auto-generated method stub
-        
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            System.err.println("Can't close output stream");
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void setLastModified(long lastModified) {
-        // TODO Auto-generated method stub
-        
+        file.setLastModified(lastModified);
     }
 
     @Override
