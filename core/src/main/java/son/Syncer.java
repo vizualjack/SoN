@@ -26,14 +26,6 @@ public class Syncer {
 
     private String testPw = "askdalwdijef";
 
-    public Syncer(File folder) {
-        this(new SyncFolder(folder));
-    }
-
-    public Syncer(File folder, ClientHolder clientHolder) {
-        this(new SyncFolder(folder), clientHolder);
-    }
-
     public Syncer(SyncFolder syncFolder) {
         this.syncFolder = syncFolder;
         clientHolder = new ClientHolder(port);

@@ -41,9 +41,9 @@ public class Sender {
                 endpoint.send(new FilePacket(fileTransfer.filePath));
             }
             else {
-                var file = syncFolder.getFileForRelativePath(fileTransfer.filePath);
-                endpoint.send(new FilePacket(fileTransfer.filePath, file.length(), file.lastModified()));
-                endpoint.sendFile(file);
+                var syncFile = syncFolder.getSyncFile(fileTransfer.filePath);
+                endpoint.send(new FilePacket(fileTransfer.filePath, syncFile.getSize(), syncFile.getLastModified()));
+                endpoint.sendSyncFile(syncFile);
             }
             if(endpoint.read().packetType != PacketType.READY) {
                 System.out.println("fail...");

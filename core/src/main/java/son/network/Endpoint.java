@@ -2,14 +2,12 @@ package son.network;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import son.SyncFile;
 import son.network.packet.BasePacket;
 
 public class Endpoint {
@@ -20,10 +18,10 @@ public class Endpoint {
         this.socket = socket;
     }
 
-    public boolean receiveFile(File file, long size) {
+    public boolean receiveSyncFile(SyncFile syncFile, long size) {
         try {
             var socketIn = socket.getInputStream();
-            var fileStream = new FileOutputStream(file);
+            var fileStream = syncFile.openOutputStream();
             int count;
             byte[] buffer = new byte[bufferSize];
             long received = 0L;
@@ -33,8 +31,7 @@ public class Endpoint {
                 received += count;
                 if(received >= size) break;
             }
-            // fileStream.flush();
-            fileStream.close();
+            syncFile.closeOutputStream();
             return true;
         }
         catch(IOException ex) {
@@ -43,18 +40,17 @@ public class Endpoint {
         return false;
     }
 
-    public boolean sendFile(File file) {
+    public boolean sendSyncFile(SyncFile syncFile) {
         try {
             var socketOut = socket.getOutputStream();
-            var fileStream = new FileInputStream(file);
+            var fileStream = syncFile.openInputStream();
             int count;
             byte[] buffer = new byte[bufferSize];
             while((count = fileStream.read(buffer)) > 0) {
                 System.out.println("send count:" + count);
                 socketOut.write(buffer, 0, count);
             }
-            // socketOut.flush();
-            fileStream.close();
+            syncFile.closeInputStream();
             return true;
         }
         catch(IOException ex) {

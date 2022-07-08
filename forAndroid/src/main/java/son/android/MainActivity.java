@@ -31,6 +31,7 @@ import android.widget.Toast;
 import org.w3c.dom.Document;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;

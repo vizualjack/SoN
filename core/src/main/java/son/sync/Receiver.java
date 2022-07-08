@@ -20,28 +20,24 @@ public class Receiver {
             if(packet.packetType == PacketType.FILE) {
                 System.out.println("File packet received");
                 var filePacket = (FilePacket)packet;
-                var file = new File(syncFolder.folder, filePacket.getFilePath());
-                createFolders(syncFolder.folder, filePacket.getFilePath());
+                // var file = new File(syncFolder.folder, filePacket.getFilePath());
+                var syncFile = syncFolder.createSyncFile(filePacket.getFilePath());
+
+                // createFolders(syncFolder.folder, filePacket.getFilePath());
                 if(filePacket.getSize() == 0) {
-                    file.delete();
+                    syncFile.delete();
                     System.out.println("File deleted");
                 }
                 else {
                     // endpoint.send(new BasePacket(PacketType.SEND_FILE));
                     System.out.println("Receiving file");
-                    endpoint.receiveFile(file, filePacket.getSize());
+                    endpoint.receiveSyncFile(syncFile, filePacket.getSize());
                     System.out.println("File received");
-                    file.setLastModified(filePacket.getLastModified());
+                    // file.setLastModified(filePacket.getLastModified());
+                    syncFile.setLastModified(filePacket.getLastModified());
                 }
                 endpoint.send(new BasePacket(PacketType.READY));
             }
         }
-    }
-
-    private void createFolders(File baseFolder, String filePath) {
-        var lastSlashIndex = filePath.lastIndexOf("\\");
-        if(lastSlashIndex == -1) return;
-        var foldersPath = filePath.substring(0, lastSlashIndex);
-        new File(baseFolder, foldersPath).mkdirs();
     }
 }
