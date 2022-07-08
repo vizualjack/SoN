@@ -114,8 +114,12 @@ public class MainActivity extends AppCompatActivity {
             if (resultData != null) {
                 uri = resultData.getData();
                 int takeFlags = resultData.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                getContentResolver().takePersistableUriPermission(uri, takeFlags); //safe to just ask once for folder
+                //TODO: safe uri to internal storage to don't ask twice
                 System.out.println(uri);
+
+
+                //TODO: this split in to syncFolder and syncFile
                 DocumentFile folder = DocumentFile.fromTreeUri(getApplicationContext(), uri);
                 DocumentFile foundFileForName = folder.findFile("letssgooo");
                 if(foundFileForName != null) {
@@ -142,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                //////////////////////
 
             }
         }
