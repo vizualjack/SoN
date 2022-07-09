@@ -1,14 +1,14 @@
 package son.network.packet;
 
 public class LastModifiedPacket extends BasePacket {
-    long lastModified;
+    double lastModified;
 
-    public LastModifiedPacket(long lastModified) {
+    public LastModifiedPacket(double lastModified) {
         super(PacketType.LAST_MODIFIED);
         this.lastModified = lastModified;
     }
 
-    public long getLastModified() {
+    public double getLastModified() {
         return lastModified;
     }
 }

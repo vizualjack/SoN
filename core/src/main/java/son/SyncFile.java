@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 public abstract class SyncFile {
     public abstract String getPath();
 
-    public abstract long getLastModified();
+    public abstract double getLastModified();
 
     public abstract long getSize();
 

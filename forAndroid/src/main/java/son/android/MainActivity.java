@@ -116,7 +116,19 @@ public class MainActivity extends AppCompatActivity {
                 getContentResolver().takePersistableUriPermission(uri, takeFlags); //safe to just ask once for folder
                 //TODO: safe uri to internal storage to don't ask twice
                 System.out.println("Setup Syncer with uri: " + uri);
-                syncer = new Syncer(new SyncFolderAndroid(uri, getApplicationContext()));
+                Uri finalUri = uri;
+                Thread thread = new Thread(() -> {
+                    syncer = new Syncer(new SyncFolderAndroid(finalUri, this));
+                    while(true) {
+                        try {
+                            Thread.sleep(10000);
+                            syncer.sync();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                thread.start();
             }
         }
     }

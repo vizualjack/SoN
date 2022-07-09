@@ -5,7 +5,7 @@ import java.util.List;
 public abstract class SyncFolder {
     public abstract SyncFile createSyncFile(String path);
 
-    public abstract long getLastChangeOfFolder();
+    public abstract double getLastChangeOfFolder();
 
     public abstract List<MetaFile> getMetaFiles();
 

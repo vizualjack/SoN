@@ -31,9 +31,11 @@ public class SyncFolderAndroid extends SyncFolder {
         for(int i = 0; i < pathParts.length; i++) {
             String pathPart = pathParts[i];
             if(i < pathParts.length - 1) {
-                file = file.findFile(pathPart);
-                if(file == null)
+                DocumentFile searchInnerFile = file.findFile(pathPart);
+                if(searchInnerFile == null)
                     file = file.createDirectory(pathPart);
+                else
+                    file = searchInnerFile;
             }
             else {
                 file = file.createFile("", pathPart);
@@ -43,8 +45,8 @@ public class SyncFolderAndroid extends SyncFolder {
     }
 
     @Override
-    public long getLastChangeOfFolder() {
-        long latestFileChange = 0;
+    public double getLastChangeOfFolder() {
+        double latestFileChange = 0;
         for(MetaFile metaFile : getMetaFiles()) {
             if(metaFile.lastModified > latestFileChange)
                 latestFileChange = metaFile.lastModified;
