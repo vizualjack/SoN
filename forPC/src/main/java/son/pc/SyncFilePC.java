@@ -10,11 +10,12 @@ import son.SyncFile;
 
 public class SyncFilePC extends SyncFile {
 
-    public File file;
+    public File baseFolder, file;
     FileInputStream inputStream;
     FileOutputStream outputStream;
 
-    public SyncFilePC(File file) {
+    public SyncFilePC(File baseFolder, File file) {
+        this.baseFolder = baseFolder;
         this.file = file;
     }
 
@@ -82,7 +83,9 @@ public class SyncFilePC extends SyncFile {
 
     @Override
     public String getPath() {
-        return file.getPath();
+        var path = file.getPath();
+        var pathParts = path.split(baseFolder.getName());
+        return pathParts[pathParts.length-1].substring(1);
     }
     
 }

@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void openDirectory() {
-        // Choose a directory using the system's file picker.
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         startActivityForResult(intent, 1234);
     }
@@ -116,38 +115,8 @@ public class MainActivity extends AppCompatActivity {
                 int takeFlags = resultData.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 getContentResolver().takePersistableUriPermission(uri, takeFlags); //safe to just ask once for folder
                 //TODO: safe uri to internal storage to don't ask twice
-                System.out.println(uri);
-
-
-                //TODO: this split in to syncFolder and syncFile
-                DocumentFile folder = DocumentFile.fromTreeUri(getApplicationContext(), uri);
-                DocumentFile foundFileForName = folder.findFile("letssgooo");
-                if(foundFileForName != null) {
-                    try {
-                        DocumentsContract.deleteDocument(getApplicationContext().getContentResolver(), foundFileForName.getUri());
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-                DocumentFile newFile = folder.createFile("", "letssgooo");
-
-                try {
-                    ParcelFileDescriptor pfd = this.getContentResolver().
-                            openFileDescriptor(newFile.getUri(), "w");
-                    FileOutputStream fileOutputStream =
-                            new FileOutputStream(pfd.getFileDescriptor());
-                    fileOutputStream.write(("Overwritten at " + System.currentTimeMillis() +
-                            "\n").getBytes());
-                    // Let the document provider know you're done by closing the stream.
-                    fileOutputStream.close();
-                    pfd.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                //////////////////////
-
+                System.out.println("Setup Syncer with uri: " + uri);
+                syncer = new Syncer(new SyncFolderAndroid(uri, getApplicationContext()));
             }
         }
     }

@@ -9,9 +9,12 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class ExampleUnitTest {
+public class BackSlashTest {
     @Test
-    public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
+    public void test() {
+        String path = "asdasd\\asdasd\\asdasd\\dasdasd";
+        String[] paths = path.split("\\\\");
+        System.out.println(paths.length);
+        System.out.println(paths[0]);
     }
 }

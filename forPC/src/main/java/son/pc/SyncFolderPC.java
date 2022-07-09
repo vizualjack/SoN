@@ -10,20 +10,20 @@ import son.SyncFile;
 import son.SyncFolder;
 
 public class SyncFolderPC extends SyncFolder {
-   public File folder;
+   public File syncFolder;
 
     public SyncFolderPC(File syncFolder) {
         if(!syncFolder.isDirectory()) throw new RuntimeException("I need a folder/directory");
-        this.folder = syncFolder;
+        this.syncFolder = syncFolder;
     }
 
     @Override
     public SyncFile createSyncFile(String path) {
         try {
-            createFolders(folder, path);
-            var newFile = new File(folder, path);
+            createFolders(syncFolder, path);
+            var newFile = new File(syncFolder, path);
             newFile.createNewFile();
-            return new SyncFilePC(newFile);
+            return new SyncFilePC(syncFolder, newFile);
         } catch (IOException e) {
             System.err.println("Can't create file");
             e.printStackTrace();
@@ -34,9 +34,9 @@ public class SyncFolderPC extends SyncFolder {
     @Override
     public long getLastChangeOfFolder() {
         long latestFileChange = 0;
-        for(var syncFile : getSyncFiles(folder)) {
-            if(syncFile.getLastModified() > latestFileChange)
-                latestFileChange = syncFile.getLastModified();
+        for(var metaFile : getMetaFiles()) {
+            if(metaFile.lastModified > latestFileChange)
+                latestFileChange = metaFile.lastModified;
         }
         return latestFileChange;
     }
@@ -44,25 +44,20 @@ public class SyncFolderPC extends SyncFolder {
     @Override
     public List<MetaFile> getMetaFiles() {
         var metaFiles = new ArrayList<MetaFile>();
-        for(var syncFile : getSyncFiles(folder)) {
-            metaFiles.add(new MetaFile(relativePathFromSyncFolder(syncFile), syncFile.getLastModified()));
+        for(var syncFile : getSyncFiles(syncFolder)) {
+            metaFiles.add(new MetaFile(syncFile.getPath(), syncFile.getLastModified()));
         }
         return metaFiles;
     }
 
     @Override
     public SyncFile getSyncFile(String filePath) {
-        return new SyncFilePC(new File(folder, filePath));
-    }
-
-    private String relativePathFromSyncFolder(SyncFile syncFile) {
-        var path = syncFile.getPath();
-        var pathParts = path.split(folder.getName());
-        return pathParts[pathParts.length-1].substring(1);
+        return new SyncFilePC(syncFolder, new File(syncFolder, filePath));
     }
 
     private void createFolders(File baseFolder, String filePath) {
         var lastSlashIndex = filePath.lastIndexOf("\\");
+
         if(lastSlashIndex == -1) return;
         var foldersPath = filePath.substring(0, lastSlashIndex);
         new File(baseFolder, foldersPath).mkdirs();
@@ -72,7 +67,7 @@ public class SyncFolderPC extends SyncFolder {
         var files = new ArrayList<SyncFile>();
         for (var fileInFolder : folder.listFiles()) {
             if(fileInFolder.isFile())
-                files.add(new SyncFilePC(fileInFolder));
+                files.add(new SyncFilePC(syncFolder, fileInFolder));
             else if (fileInFolder.isDirectory())
                 files.addAll(getSyncFiles(fileInFolder));
         }        
