@@ -32,20 +32,10 @@ public class SyncFolderPC extends SyncFolder {
     }
 
     @Override
-    public double getLastChangeOfFolder() {
-        double latestFileChange = 0;
-        for(var metaFile : getMetaFiles()) {
-            if(metaFile.lastModified > latestFileChange)
-                latestFileChange = metaFile.lastModified;
-        }
-        return latestFileChange;
-    }
-
-    @Override
     public List<MetaFile> getMetaFiles() {
         var metaFiles = new ArrayList<MetaFile>();
         for(var syncFile : getSyncFiles(syncFolder)) {
-            metaFiles.add(new MetaFile(syncFile.getPath(), syncFile.getLastModified()));
+            metaFiles.add(new MetaFile(syncFile.getPath(), syncFile.getLastModified(), syncFile.getChecksum()));
         }
         return metaFiles;
     }

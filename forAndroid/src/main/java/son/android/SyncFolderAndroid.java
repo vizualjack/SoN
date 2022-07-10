@@ -45,20 +45,10 @@ public class SyncFolderAndroid extends SyncFolder {
     }
 
     @Override
-    public double getLastChangeOfFolder() {
-        double latestFileChange = 0;
-        for(MetaFile metaFile : getMetaFiles()) {
-            if(metaFile.lastModified > latestFileChange)
-                latestFileChange = metaFile.lastModified;
-        }
-        return latestFileChange;
-    }
-
-    @Override
     public List<MetaFile> getMetaFiles() {
         List<MetaFile> metaFiles = new ArrayList<>();
         for(SyncFile syncFile : getSyncFiles(syncFolder)) {
-            metaFiles.add(new MetaFile(syncFile.getPath(), syncFile.getLastModified()));
+            metaFiles.add(new MetaFile(syncFile.getPath(), syncFile.getLastModified(), syncFile.getChecksum()));
         }
         return metaFiles;
     }

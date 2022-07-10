@@ -77,7 +77,8 @@ public class Sender {
             for (var otherMetaFile : otherMetaFiles) {
                 if(thisMetaFile.path.contentEquals(otherMetaFile.path)) {
                     found = true;
-                    if(thisMetaFile.lastModified > otherMetaFile.lastModified) 
+                    if( thisMetaFile.checksum != otherMetaFile.checksum && 
+                        thisMetaFile.lastModified > otherMetaFile.lastModified) 
                         fileTransfers.add(new FileTransfer(FileTransfer.Type.TRANSFER, thisMetaFile.path));
                     break;
                 }
