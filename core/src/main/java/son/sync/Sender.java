@@ -50,7 +50,6 @@ public class Sender {
                 break;
             }
         }
-
         endpoint.send(new BasePacket(PacketType.END_OF_SYNC));
 
         // for (var file : syncFolder.getFiles()) {
@@ -77,7 +76,7 @@ public class Sender {
             for (var otherMetaFile : otherMetaFiles) {
                 if(thisMetaFile.path.contentEquals(otherMetaFile.path)) {
                     found = true;
-                    if( thisMetaFile.checksum != otherMetaFile.checksum && 
+                    if( !thisMetaFile.checksum.contentEquals(otherMetaFile.checksum) && 
                         thisMetaFile.lastModified > otherMetaFile.lastModified) 
                         fileTransfers.add(new FileTransfer(FileTransfer.Type.TRANSFER, thisMetaFile.path));
                     break;

@@ -5,8 +5,8 @@ import java.util.List;
 public abstract class SyncFolder {
     public abstract SyncFile createSyncFile(String path);
 
-    public double getLastChangeOfFolder() {
-        double latestFileChange = 0;
+    public long getLastChangeOfFolder() {
+        long latestFileChange = 0;
         for(MetaFile metaFile : getMetaFiles()) {
             if(metaFile.lastModified > latestFileChange)
                 latestFileChange = metaFile.lastModified;

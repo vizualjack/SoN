@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class MetaFile implements Serializable {
     public String path, checksum;
-    public double lastModified;
+    public long lastModified;
 
-    public MetaFile(String path, double lastModified, String checksum) {
+    public MetaFile(String path, long lastModified, String checksum) {
         this.path = path;
         this.lastModified = lastModified;
         this.checksum = checksum;

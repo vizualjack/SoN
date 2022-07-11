@@ -12,6 +12,7 @@ public abstract class SyncFile {
             StringBuilder sb = new StringBuilder();
             long size = getSize();
             long bytesOffset = size / CHECKSUM_ACCURACY;
+            if(bytesOffset == 0) bytesOffset = 1;
             var in = openInputStream();
             byte[] buffer = new byte[1];
             for(long curOffset = 0; curOffset < size; curOffset += bytesOffset) {
