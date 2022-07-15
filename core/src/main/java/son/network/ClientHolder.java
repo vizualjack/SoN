@@ -20,19 +20,21 @@ public class ClientHolder implements Runnable{
     public ClientHolder(int port) {
         this.port = port;
         clients = new ArrayList<byte[]>();
-        try {
-            getLocalAddress();
-            udpEndpoint = new DatagramSocket(port);
-        } catch (SocketException | UnknownHostException e) {
-            e.printStackTrace();
-        }
     }
 
-    private void getLocalAddress() throws SocketException, UnknownHostException {
-        try(DatagramSocket s=new DatagramSocket()) {
+    public byte[] getLocalAddress() {
+        byte[] address = null;
+        try(DatagramSocket s = new DatagramSocket()) {
             s.connect(InetAddress.getByAddress(new byte[]{1,1,1,1}), 1337);
-            selfAddress = s.getLocalAddress().getAddress();
+            address = s.getLocalAddress().getAddress();
+        } catch(SocketException | UnknownHostException e) {
+            e.printStackTrace();
         }
+        return address;
+    }
+
+    public boolean hasNetworkChanged() {
+        return !InetAddressHelper.compareAddresses(getLocalAddress(), selfAddress);
     }
 
     public void addToClients(byte[] addr) {
@@ -46,7 +48,26 @@ public class ClientHolder implements Runnable{
         return clients;
     }
 
+    public void restart() {
+        stop();
+        start();
+    }
+
+    public void stop() {
+        if(t == null) return;
+        t.interrupt();
+        t = null;
+        clients.clear();
+    }
+
     public void start() {
+        selfAddress = getLocalAddress();
+        if(!InetAddressHelper.isLocalAddress(selfAddress)) return;
+        try {
+            udpEndpoint = new DatagramSocket(port);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
         if(t != null) return;
         t = new Thread(this);
         t.start();
@@ -91,5 +112,9 @@ public class ClientHolder implements Runnable{
 
     public void remove(byte[] clientAddress) {
         clients.remove(clientAddress);
+    }
+
+    public boolean isActive() {
+        return t != null;
     }
 }

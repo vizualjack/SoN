@@ -44,6 +44,20 @@ public class Syncer {
     }
 
     public void sync() {
+        if(clientHolder.hasNetworkChanged()) {
+            System.out.println("Network changed...");
+            clientHolder.stop();
+            server.stop();
+            clientHolder.start();
+            if(clientHolder.isActive()) {
+                server.start();
+                System.out.println("Syncer restarted");
+            }
+            else {
+                System.out.println("Network is not a local one");
+            }
+        }
+        if(!clientHolder.isActive()) return;
         for(var clientAddress : clientHolder.getClients()) {
             Client client = new Client(port);
             client.onConnected = s -> connectedToServer(s);

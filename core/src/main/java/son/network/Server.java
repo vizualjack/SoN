@@ -15,6 +15,17 @@ public class Server implements Runnable {
         this.port = port;
     }
 
+    public void restart() {
+        stop();
+        start();
+    }
+
+    public void stop() {
+        if(thread == null) return;
+        thread.interrupt();
+        thread = null;
+    }
+
     public void start() {
         if(thread != null) return;
         thread = new Thread(this);
