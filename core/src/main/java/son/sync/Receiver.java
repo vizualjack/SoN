@@ -1,7 +1,5 @@
 package son.sync;
 
-import java.io.File;
-
 import son.SyncFolder;
 import son.network.Endpoint;
 import son.network.packet.BasePacket;

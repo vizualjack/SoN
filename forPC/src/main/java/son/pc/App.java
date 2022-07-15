@@ -27,7 +27,6 @@ public class App {
             } catch (InterruptedException e) {
                 System.out.println("Thread can't sleep");
             }
-
         }
     }
 }

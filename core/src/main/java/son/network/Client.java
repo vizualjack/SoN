@@ -22,7 +22,6 @@ public class Client {
         try {
             connect(InetAddress.getByName(address).getAddress());
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

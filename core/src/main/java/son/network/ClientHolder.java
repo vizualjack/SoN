@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.graph.Network;
 
 public class ClientHolder implements Runnable{
     DatagramSocket udpEndpoint;
@@ -27,7 +24,6 @@ public class ClientHolder implements Runnable{
             getLocalAddress();
             udpEndpoint = new DatagramSocket(port);
         } catch (SocketException | UnknownHostException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -75,7 +71,6 @@ public class ClientHolder implements Runnable{
                     }
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

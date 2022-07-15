@@ -1,12 +1,10 @@
 package son.sync;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import son.MetaFile;
 import son.SyncFolder;
-import son.compare.Comparer;
 import son.network.Endpoint;
 import son.network.packet.BasePacket;
 import son.network.packet.FilePacket;
@@ -22,14 +20,6 @@ public class Sender {
         FileTransfer(Type type, String filePath) {
             this.type = type;
             this.filePath = filePath;
-        }
-
-        Type getType() {
-            return type;
-        }
-        
-        String getFilePath() {
-            return filePath;
         }
     }
 

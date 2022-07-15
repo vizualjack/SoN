@@ -1,6 +1,5 @@
 package son;
 
-import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +22,6 @@ public class Syncer {
     ClientHolder clientHolder;
 
     List<byte[]> syncingClients = new ArrayList<>();
-
-    private String testPw = "askdalwdijef";
 
     public Syncer(SyncFolder syncFolder) {
         this.syncFolder = syncFolder;
