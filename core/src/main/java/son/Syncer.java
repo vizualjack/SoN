@@ -59,12 +59,15 @@ public class Syncer {
             }
         }
         if(!clientHolder.isActive()) return;
+        var badClientAddresses = new ArrayList<byte[]>();
         for(var clientAddress : clientHolder.getClients()) {
             Client client = new Client(port);
             client.onConnected = s -> connectedToServer(s);
             client.connect(clientAddress);
-            if(client.timedOut) clientHolder.remove(clientAddress);
+            if(client.timedOut) badClientAddresses.add(clientAddress);
         }
+        for(var badClientAddress : badClientAddresses) 
+            clientHolder.remove(badClientAddress);
     }
 
     void connectedToServer(Socket socket) {
