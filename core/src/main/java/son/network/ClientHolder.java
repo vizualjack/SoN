@@ -55,7 +55,14 @@ public class ClientHolder implements Runnable{
 
     public void stop() {
         if(t == null) return;
-        t.interrupt();
+        udpEndpoint.close();
+        udpEndpoint = null;
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            System.err.println("can't join client holder server");
+            e.printStackTrace();
+        }
         t = null;
         clients.clear();
     }
@@ -79,7 +86,7 @@ public class ClientHolder implements Runnable{
         sendPacketToAll();
         var bytes = new byte[msg.length()];
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
-        while(true) {       
+        while(udpEndpoint != null) {       
             try {
                 System.out.println("wait for packet");
                 udpEndpoint.receive(packet);

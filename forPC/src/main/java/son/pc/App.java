@@ -23,7 +23,7 @@ public class App {
         var syncer = new Syncer(new SyncFolderPC(f));
         while(true) {
             try {
-                Thread.sleep(60000);
+                Thread.sleep(10000);
                 System.out.println("Syncing...");
                 syncer.sync();
             } catch (InterruptedException e) {

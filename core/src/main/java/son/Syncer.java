@@ -47,6 +47,7 @@ public class Syncer {
         if(clientHolder.hasNetworkChanged()) {
             System.out.println("Network changed...");
             clientHolder.stop();
+            System.out.println("Client holder stopped");
             server.stop();
             clientHolder.start();
             if(clientHolder.isActive()) {

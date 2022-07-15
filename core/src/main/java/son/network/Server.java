@@ -10,6 +10,7 @@ public class Server implements Runnable {
 
     int port;
     Thread thread;
+    ServerSocket server;
 
     public Server(int port) {
         this.port = port;
@@ -22,25 +23,36 @@ public class Server implements Runnable {
 
     public void stop() {
         if(thread == null) return;
-        thread.interrupt();
+        try {
+            server.close();
+            server = null;
+            thread.join();
+        } catch (InterruptedException | IOException e) {
+            System.err.println("can't close or join serverthread");
+            e.printStackTrace();
+        }
         thread = null;
     }
 
     public void start() {
         if(thread != null) return;
         thread = new Thread(this);
+        try {
+            server = new ServerSocket(port);
+        } catch (IOException e) {
+            System.err.println("Can't create serversocket");
+            e.printStackTrace();
+        }
         thread.start();
     }
 
     @Override
     public void run() {
-        while(true) {
+        while(server != null) {
             try {
-                ServerSocket server = new ServerSocket(port);
                 Socket client = server.accept(); 
                 onConnected.accept(client);
                 client.close();
-                server.close();
             }
             catch(IOException ex) {
                 ex.fillInStackTrace();
