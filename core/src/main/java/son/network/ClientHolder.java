@@ -34,7 +34,14 @@ public class ClientHolder implements Runnable{
     }
 
     public boolean hasNetworkChanged() {
-        return !InetAddressHelper.compareAddresses(getLocalAddress(), selfAddress);
+        byte[] locaAddr = getLocalAddress();
+        if(InetAddressHelper.compareAddresses(locaAddr, selfAddress)) {
+            return true;
+        }
+        else {
+            System.out.println("Changed from addr " + InetAddressHelper.toString(selfAddress) + " to " + InetAddressHelper.toString(locaAddr));
+            return false;
+        }    
     }
 
     public void addToClients(byte[] addr) {
@@ -105,10 +112,12 @@ public class ClientHolder implements Runnable{
     }
 
     private void sendPacketToAll() {
+        System.out.println("sendPacketToAll");
         try {
             var bytes = msg.getBytes();
             var broadcastAddress = selfAddress.clone();
             broadcastAddress[3] = (byte)255;
+            System.out.println("send all packet to " + InetAddressHelper.toString(broadcastAddress));
             var inetBroadcastAddress = InetAddress.getByAddress(broadcastAddress);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, inetBroadcastAddress, port);
             udpEndpoint.send(packet);

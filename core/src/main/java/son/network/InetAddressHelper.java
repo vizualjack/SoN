@@ -16,4 +16,13 @@ public class InetAddressHelper {
                 addr[0] == (byte)192 &&
                 addr[1] == (byte)168;
     }
+
+    public static String toString(byte[] selfAddress) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : selfAddress) {
+            sb.append(256+b);
+            sb.append(".");
+        }
+        return sb.substring(0, sb.length()-1);
+    }
 }
