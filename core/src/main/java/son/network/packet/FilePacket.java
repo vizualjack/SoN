@@ -2,9 +2,10 @@ package son.network.packet;
 
 public class FilePacket extends BasePacket {
     String filePath;
-    long size, lastModified;
+    long size;
+    double lastModified;
     
-    public FilePacket(String filePath, long size, long lastModified) {
+    public FilePacket(String filePath, long size, double lastModified) {
         super(PacketType.FILE);
         this.filePath = filePath;
         this.size = size;
@@ -25,7 +26,7 @@ public class FilePacket extends BasePacket {
         return size;
     }
 
-    public long getLastModified() {
+    public double getLastModified() {
         return lastModified;
     }
 }

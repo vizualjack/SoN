@@ -62,6 +62,7 @@ public class Syncer {
 
         var rolePacket = (RolePacket) endpoint.read();
         var role = rolePacket.getRole();
+        System.out.println("got role");
 
         switch(role) {
             case RECEIVER:
@@ -80,25 +81,33 @@ public class Syncer {
         System.out.println("Connected to client");
         var endpoint = new Endpoint(socket);
         var address = socket.getInetAddress().getAddress();
-        if(!addToSyncingClients(address)) return;
+        if(!addToSyncingClients(address)) {
+            System.out.println("already connected...");
+            return;
+        }
 
-        clientHolder.addToClients(address);
+        // clientHolder.addToClients(address);
         var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
         var lastModifiedClient = lastModifiedPacket.getLastModified();
         var lastModified = syncFolder.getLastChangeOfFolder();
 
+        System.out.println("comparing last modified");
         if(lastModified != lastModifiedClient) {
             if(lastModified > lastModifiedClient) {
+                System.out.println("send receive packet and create sender");
                 endpoint.send(new RolePacket(Role.RECEIVER));
                 new Sender(endpoint, syncFolder);
             }
             else {
+                System.out.println("send sender packet and create receiver");
                 endpoint.send(new RolePacket(Role.SENDER));
                 new Receiver(endpoint, syncFolder);
             }
         }
-        else
+        else {
+            System.out.println("nothing to do...");
             endpoint.send(new RolePacket(Role.NOTHING));
+        }
 
         removeFromSyncingClients(address);
     }

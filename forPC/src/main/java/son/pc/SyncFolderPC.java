@@ -32,27 +32,19 @@ public class SyncFolderPC extends SyncFolder {
     }
 
     @Override
-    public long getLastChangeOfFolder() {
-        long latestFileChange = 0;
-        for(var metaFile : getMetaFiles()) {
-            if(metaFile.lastModified > latestFileChange)
-                latestFileChange = metaFile.lastModified;
-        }
-        return latestFileChange;
-    }
-
-    @Override
     public List<MetaFile> getMetaFiles() {
         var metaFiles = new ArrayList<MetaFile>();
         for(var syncFile : getSyncFiles(syncFolder)) {
-            metaFiles.add(new MetaFile(syncFile.getPath(), syncFile.getLastModified()));
+            metaFiles.add(new MetaFile(syncFile.getPath(), syncFile.getLastModified(), syncFile.getChecksum()));
         }
         return metaFiles;
     }
 
     @Override
     public SyncFile getSyncFile(String filePath) {
-        return new SyncFilePC(syncFolder, new File(syncFolder, filePath));
+        File file = new File(syncFolder, filePath);
+        if(!file.exists()) return null;
+        return new SyncFilePC(syncFolder, file);
     }
 
     private void createFolders(File baseFolder, String filePath) {

@@ -30,19 +30,15 @@ public class SyncFileAndroid extends SyncFile {
 
     @Override
     public String getPath() {
-        StringBuffer pathBuilder = new StringBuffer();
-        DocumentFile currentFile = null;
-        do {
-            if(currentFile == null) currentFile = file;
-            else currentFile = currentFile.getParentFile();
-            pathBuilder.insert(0, "/" + currentFile.getName());
-        } while(currentFile.getName() != baseFolder.getName());
-        return pathBuilder.substring(1);
+        String lastSegment = file.getUri().getLastPathSegment();
+        String[] pathParts = lastSegment.split(baseFolder.getName());
+        String path = pathParts[pathParts.length-1];
+        return path.substring(1).replace("/", "\\");
     }
 
     @Override
     public long getLastModified() {
-        return file.lastModified();
+        return file.lastModified()/1000*1000;
     }
 
     @Override
@@ -63,7 +59,7 @@ public class SyncFileAndroid extends SyncFile {
     public FileInputStream openInputStream() {
         try {
             inputPfd = context.getContentResolver().
-                    openFileDescriptor(file.getUri(), "w");
+                    openFileDescriptor(file.getUri(), "r");
             fileInputStream = new FileInputStream(inputPfd.getFileDescriptor());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -87,7 +83,7 @@ public class SyncFileAndroid extends SyncFile {
     public FileOutputStream openOutputStream() {
         try {
             outputPfd = context.getContentResolver().
-                    openFileDescriptor(file.getUri(), "r");
+                    openFileDescriptor(file.getUri(), "w");
             fileOutputStream = new FileOutputStream(outputPfd.getFileDescriptor());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -109,13 +105,14 @@ public class SyncFileAndroid extends SyncFile {
 
     @Override
     public void setLastModified(long lastModified) {
-        try {
-            ContentValues updateValues = new ContentValues();
-            updateValues.put(DocumentsContract.Document.COLUMN_LAST_MODIFIED, lastModified);
-            Uri docUri = file.getUri();
-            context.getContentResolver().update(docUri, updateValues, null, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // not in use
+//        try {
+//            ContentValues updateValues = new ContentValues();
+//            updateValues.put(DocumentsContract.Document.COLUMN_LAST_MODIFIED, lastModified);
+//            Uri docUri = file.getUri();
+//            context.getContentResolver().update(docUri, updateValues, null, null);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 }

@@ -21,7 +21,7 @@ public class SyncFilePC extends SyncFile {
 
     @Override
     public long getLastModified() {
-        return (file.lastModified()/1000*1000);
+        return file.lastModified()/1000*1000;
     }
 
     @Override
