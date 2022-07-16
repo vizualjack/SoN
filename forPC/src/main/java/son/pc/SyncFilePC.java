@@ -31,7 +31,10 @@ public class SyncFilePC extends SyncFile {
 
     @Override
     public void delete() {
-        file.delete();
+        if(!file.isDirectory() || (file.isDirectory() && file.listFiles().length <= 0)) {
+            file.delete();
+            new SyncFilePC(baseFolder, file.getParentFile()).delete();
+        }
     }
 
     @Override
