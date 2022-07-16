@@ -13,11 +13,11 @@ public class App {
             System.out.println("Set syncFolder: " + f.getPath());
         }
         else {
-            System.out.println("Create test folder...");
-            f = new File("testFolder");
-            f.mkdir();
-            // System.err.println("No path set");
-            // return;
+            // System.out.println("Create test folder...");
+            // f = new File("testFolder");
+            // f.mkdir();
+            System.err.println("No path set");
+            return;
         }
   
         var syncer = new Syncer(new SyncFolderPC(f));
