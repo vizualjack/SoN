@@ -36,11 +36,11 @@ public class ClientHolder implements Runnable{
     public boolean hasNetworkChanged() {
         byte[] locaAddr = getLocalAddress();
         if(InetAddressHelper.compareAddresses(locaAddr, selfAddress)) {
-            return true;
+            return false;
         }
         else {
             System.out.println("Changed from addr " + InetAddressHelper.toString(selfAddress) + " to " + InetAddressHelper.toString(locaAddr));
-            return false;
+            return true;
         }    
     }
 
