@@ -49,7 +49,10 @@ public class SyncFileAndroid extends SyncFile {
     @Override
     public void delete() {
         try {
-            DocumentsContract.deleteDocument(context.getContentResolver(), file.getUri());
+            if(!file.isDirectory() || (file.isDirectory() && file.listFiles().length <= 0)) {
+                DocumentsContract.deleteDocument(context.getContentResolver(), file.getUri());
+                new SyncFileAndroid(baseFolder, file.getParentFile(), context).delete();
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
