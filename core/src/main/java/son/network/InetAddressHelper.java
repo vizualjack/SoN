@@ -17,10 +17,12 @@ public class InetAddressHelper {
                 addr[1] == (byte)168;
     }
 
-    public static String toString(byte[] selfAddress) {
+    public static String toString(byte[] addr) {
+        if(addr == null) return null;
         StringBuilder sb = new StringBuilder();
-        for (byte b : selfAddress) {
-            sb.append(256+b);
+        for (byte b : addr) {
+            if(b < 0) sb.append(256+b);
+            else sb.append(b);
             sb.append(".");
         }
         return sb.substring(0, sb.length()-1);
