@@ -28,10 +28,28 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'son.App'
+    //mainClass = 'son.pc.App'
 }
 
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+tasks.register('assembleExecutableJar', Jar) {
+    dependsOn ':forPC:jar'  // Depends on the core module's jar task
+
+    from project(':forPC').sourceSets.main.output
+    from project(':core').sourceSets.main.output
+    // Include all dependencies in the JAR
+    //from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+
+    // Specify the main class for the executable JAR
+    manifest {
+        attributes 'Main-Class': 'son.pc.App' // Replace with your main class
+    }
+
+    // Rename the JAR file if needed
+    archiveFileName = 'son.jar' // Customize the JAR name
+    destinationDir file('build')      // Output directory
 }
