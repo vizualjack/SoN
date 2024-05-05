@@ -71,9 +71,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void startSyncer() {
         if(getPath() == null) {
+            System.out.println("Open directory chooser");
             openDirectory();
         }
         else {
+            System.out.println("Start sync service");
             Intent intent = new Intent(getApplicationContext(), SyncerActivity.class);
             getApplicationContext().startForegroundService(intent);
         }

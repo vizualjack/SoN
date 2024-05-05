@@ -98,7 +98,9 @@ public class ClientHolder implements Runnable{
                 System.out.println("wait for packet");
                 udpEndpoint.receive(packet);
                 System.out.println("packet received");
-                if(new String(packet.getData()).contentEquals(msg)) {
+                var packetAsStr = new String(packet.getData());
+                System.out.println("packet as string: " + packetAsStr);
+                if(packetAsStr.contentEquals(msg)) {
                     var curAddress = packet.getAddress().getAddress();
                     if(!InetAddressHelper.compareAddresses(curAddress, selfAddress)) {
                         System.out.println("SoN User found:" + curAddress);

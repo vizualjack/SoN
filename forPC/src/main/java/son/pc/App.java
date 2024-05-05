@@ -12,20 +12,21 @@ public class App {
             f = new File(args[0]);
             System.out.println("Set syncFolder: " + f.getPath());
         }
-        else {
-            // System.out.println("Create test folder...");
-            // f = new File("testFolder");
-            // f.mkdir();
-            System.err.println("No path set");
-            return;
+        else { 
+            System.out.println("Create test folder...");
+            f = new File("testFolder");
+            f.mkdir();
+            // System.err.println("No path set");
+            // return;
         }
   
         var syncer = new Syncer(new SyncFolderPC(f));
         while(true) {
             try {
-                Thread.sleep(60000);
                 System.out.println("Syncing...");
                 syncer.sync();
+                System.out.println("Synced. Next sync in 60 seconds");
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 System.out.println("Thread can't sleep");
             }

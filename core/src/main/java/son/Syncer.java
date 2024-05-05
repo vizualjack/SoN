@@ -75,13 +75,10 @@ public class Syncer {
         var endpoint = new Endpoint(socket);
         var address = socket.getInetAddress().getAddress();
         if(!addToSyncingClients(address)) return;
-
         endpoint.send(new LastModifiedPacket(syncFolder.getLastChangeOfFolder()));
-
         var rolePacket = (RolePacket) endpoint.read();
         var role = rolePacket.getRole();
         System.out.println("got role");
-
         switch(role) {
             case RECEIVER:
                 new Receiver(endpoint, syncFolder);
@@ -103,12 +100,12 @@ public class Syncer {
             System.out.println("already connected...");
             return;
         }
-
         // clientHolder.addToClients(address);
         var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
         var lastModifiedClient = lastModifiedPacket.getLastModified();
         var lastModified = syncFolder.getLastChangeOfFolder();
-
+        System.out.println("lastModifiedClient: " + lastModifiedClient);
+        System.out.println("lastModified: " + lastModified);
         System.out.println("comparing last modified");
         if(lastModified != lastModifiedClient) {
             if(lastModified > lastModifiedClient) {

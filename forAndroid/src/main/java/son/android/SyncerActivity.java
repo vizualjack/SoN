@@ -30,7 +30,7 @@ public class SyncerActivity extends Service {
         String channelId = createNotificationChannel("SYNCER_MESSAGE", "Syncer Channel");
         Notification notification = new Notification.Builder(getApplicationContext(), channelId)
                 .setContentTitle("Syncer")
-                .setContentText("I'm just keep all stuff synced...")
+                .setContentText("I just keep all stuff synced...")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .build();
         startForeground(startId, notification);
@@ -54,9 +54,10 @@ public class SyncerActivity extends Service {
             syncer = new Syncer(new SyncFolderAndroid(Uri.parse(path), this));
             while(true) {
                 try {
-                    Thread.sleep(60000);
-                    System.out.println("syncing...");
+                    System.out.println("Syncing...");
                     syncer.sync();
+                    System.out.println("Synced. Next sync in 60 seconds");
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

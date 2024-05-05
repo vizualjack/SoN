@@ -57,7 +57,6 @@ public class SyncEstablisher implements Runnable {
             while(!stopped) {
                 try {
                     Socket s = ss.accept();
-
                     DataInputStream dis = new DataInputStream(s.getInputStream());
                     String str = (String)dis.readUTF();  
                     if(startSyncMessage.equals(str)) {

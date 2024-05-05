@@ -39,6 +39,7 @@ public class Server implements Runnable {
         thread = new Thread(this);
         try {
             server = new ServerSocket(port);
+            System.out.println("Sync Server created");
         } catch (IOException e) {
             System.err.println("Can't create serversocket");
             e.printStackTrace();
@@ -48,6 +49,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Sync Server started");
         while(server != null) {
             try {
                 Socket client = server.accept(); 
