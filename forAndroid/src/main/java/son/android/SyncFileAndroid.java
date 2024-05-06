@@ -8,6 +8,7 @@ import android.provider.DocumentsContract;
 
 import androidx.documentfile.provider.DocumentFile;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -108,14 +109,28 @@ public class SyncFileAndroid extends SyncFile {
 
     @Override
     public void setLastModified(long lastModified) {
-        // not in use
-//        try {
-//            ContentValues updateValues = new ContentValues();
-//            updateValues.put(DocumentsContract.Document.COLUMN_LAST_MODIFIED, lastModified);
-//            Uri docUri = file.getUri();
-//            context.getContentResolver().update(docUri, updateValues, null, null);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        // dont work for android
+       try {
+//           file.getUri()
+           System.out.println("Set last modified ANDROID");
+//           ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(file.getUri(), "rw");
+//           if (pfd == null) {
+//               System.out.println("No ParcelFileDescriptor");
+//               return;
+//           }
+//           File f = new File(file.getUri().getPath());
+//           System.out.println("last modified prev: " + f.lastModified());
+//           if(f.setLastModified(lastModified)) System.out.println("Last modified set!");
+//           System.out.println("last modified after: " + f.lastModified());
+//           pfd.close();  // Close the ParcelFileDescriptor to release resources
+//           ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(file.getUri(), "rw");
+//           pfd.getFileDescriptor()
+//           ContentValues updateValues = new ContentValues();
+//           updateValues.put(DocumentsContract.Document.COLUMN_LAST_MODIFIED, lastModified);
+//           context.getContentResolver().insert(file.getUri(), updateValues);
+//           System.out.println("Changes: " + changes);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
     }
 }

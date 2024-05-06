@@ -73,7 +73,7 @@ public class SyncFolderAndroid extends SyncFolder {
     private List<SyncFile> getSyncFiles(DocumentFile folder) {
         List<SyncFile> files = new ArrayList<>();
         for (DocumentFile fileInFolder : folder.listFiles()) {
-            if(fileInFolder.isFile())
+            if(fileInFolder.isFile() && fileInFolder.getName() != SYNC_FILE_NAME)
                 files.add(new SyncFileAndroid(syncFolder, fileInFolder, context));
             else if (fileInFolder.isDirectory())
                 files.addAll(getSyncFiles(fileInFolder));

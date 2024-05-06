@@ -20,16 +20,6 @@ public class App {
             // return;
         }
   
-        var syncer = new Syncer(new SyncFolderPC(f));
-        while(true) {
-            try {
-                System.out.println("Syncing...");
-                syncer.sync();
-                System.out.println("Synced. Next sync in 60 seconds");
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                System.out.println("Thread can't sleep");
-            }
-        }
+        new Syncer(new SyncFolderPC(f)).syncLoop();
     }
 }

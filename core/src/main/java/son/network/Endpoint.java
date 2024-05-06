@@ -26,7 +26,7 @@ public class Endpoint {
             byte[] buffer = new byte[bufferSize];
             long received = 0L;
             while((count = socketIn.read(buffer)) > 0) {
-                System.out.println("receive count:" + count);
+                // System.out.println("receive count:" + count);
                 fileStream.write(buffer, 0, count);
                 received += count;
                 if(received >= size) break;
@@ -47,7 +47,7 @@ public class Endpoint {
             int count;
             byte[] buffer = new byte[bufferSize];
             while((count = fileStream.read(buffer)) > 0) {
-                System.out.println("send count:" + count);
+                // System.out.println("send count:" + count);
                 socketOut.write(buffer, 0, count);
             }
             syncFile.closeInputStream();

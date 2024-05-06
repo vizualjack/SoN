@@ -81,6 +81,7 @@ public class SyncFilePC extends SyncFile {
 
     @Override
     public void setLastModified(long lastModified) {
+        System.out.println("Set last modified PC");
         file.setLastModified(lastModified);
     }
 

@@ -52,16 +52,7 @@ public class SyncerActivity extends Service {
             String path = PreferenceManager.getDefaultSharedPreferences(this).getString(MainActivity.PATH_KEY, null);
             if(path == null) return;
             syncer = new Syncer(new SyncFolderAndroid(Uri.parse(path), this));
-            while(true) {
-                try {
-                    System.out.println("Syncing...");
-                    syncer.sync();
-                    System.out.println("Synced. Next sync in 60 seconds");
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            syncer.syncLoop();
         });
         syncerThread.start();
     }

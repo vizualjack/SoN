@@ -44,11 +44,12 @@ public class ClientHolder implements Runnable{
         }    
     }
 
-    public void addToClients(byte[] addr) {
+    public boolean addToClients(byte[] addr) {
         for(var clientAddr : clients) {
-            if(InetAddressHelper.compareAddresses(clientAddr, addr)) return;
+            if(InetAddressHelper.compareAddresses(clientAddr, addr)) return false;
         }
         clients.add(addr);
+        return true;
     }
 
     public List<byte[]> getClients() {
@@ -62,16 +63,19 @@ public class ClientHolder implements Runnable{
 
     public void stop() {
         if(t == null) return;
+        System.out.println("Stopping client holder...");
         udpEndpoint.close();
         udpEndpoint = null;
         try {
             t.join();
         } catch (InterruptedException e) {
-            System.err.println("can't join client holder server");
+            System.err.println("Can't join client holder thread");
             e.printStackTrace();
         }
         t = null;
         clients.clear();
+        System.out.println("Cleared client list");
+        System.out.println("Client holder stopped");
     }
 
     public void start() {
@@ -90,36 +94,33 @@ public class ClientHolder implements Runnable{
     @Override
     public void run() {
         if(udpEndpoint == null) return;
-        sendPacketToAll();
         var bytes = new byte[msg.length()];
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
         while(udpEndpoint != null) {       
             try {
-                System.out.println("wait for packet");
+                // System.out.println("wait for packet");
                 udpEndpoint.receive(packet);
-                System.out.println("packet received");
+                // System.out.println("packet received");
                 var packetAsStr = new String(packet.getData());
-                System.out.println("packet as string: " + packetAsStr);
+                // System.out.println("packet as string: " + packetAsStr);
                 if(packetAsStr.contentEquals(msg)) {
                     var curAddress = packet.getAddress().getAddress();
-                    if(!InetAddressHelper.compareAddresses(curAddress, selfAddress)) {
-                        System.out.println("SoN User found:" + curAddress);
-                        addToClients(curAddress);
-                    }
+                    if(InetAddressHelper.compareAddresses(curAddress, selfAddress)) continue;
+                    if(addToClients(curAddress)) System.out.println("New SoN User found: " + InetAddressHelper.toString(curAddress));
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void sendPacketToAll() {
-        System.out.println("sendPacketToAll");
+    public void pingToClients() {
+        // System.out.println("sendPacketToAll");
         try {
             var bytes = msg.getBytes();
             var broadcastAddress = selfAddress.clone();
             broadcastAddress[3] = (byte)255;
-            System.out.println("send all packet to " + InetAddressHelper.toString(broadcastAddress));
+            System.out.println("Ping to all client"); // + InetAddressHelper.toString(broadcastAddress));
             var inetBroadcastAddress = InetAddress.getByAddress(broadcastAddress);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, inetBroadcastAddress, port);
             udpEndpoint.send(packet);

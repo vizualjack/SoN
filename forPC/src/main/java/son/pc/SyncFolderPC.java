@@ -58,7 +58,7 @@ public class SyncFolderPC extends SyncFolder {
     private List<SyncFile> getSyncFiles(File folder) {
         var files = new ArrayList<SyncFile>();
         for (var fileInFolder : folder.listFiles()) {
-            if(fileInFolder.isFile())
+            if(fileInFolder.isFile() && fileInFolder.getName() != SYNC_FILE_NAME) 
                 files.add(new SyncFilePC(syncFolder, fileInFolder));
             else if (fileInFolder.isDirectory())
                 files.addAll(getSyncFiles(fileInFolder));

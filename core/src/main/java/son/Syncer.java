@@ -16,7 +16,8 @@ import son.sync.Receiver;
 import son.sync.Sender;
 
 public class Syncer {
-    int port = 1337;
+    final int SYNC_RATE_MILLIS = 30000;
+    final int PORT = 1337;
     Server server;
     SyncFolder syncFolder;
     ClientHolder clientHolder;
@@ -25,7 +26,7 @@ public class Syncer {
 
     public Syncer(SyncFolder syncFolder) {
         this.syncFolder = syncFolder;
-        clientHolder = new ClientHolder(port);
+        clientHolder = new ClientHolder(PORT);
         startServer();
         clientHolder.start();
     }
@@ -38,16 +39,32 @@ public class Syncer {
     }
 
     private void startServer() {
-        server = new Server(port);
+        server = new Server(PORT);
         server.onConnected = s -> connectedToClient(s);
         server.start();
     }
 
+    public void syncLoop() {
+        System.out.println("Start sync loop");
+        while(true) {
+            try {
+                System.out.println("Send ping to all...");
+                clientHolder.pingToClients();
+                System.out.println("Syncing...");
+                sync();
+                System.out.println(String.format("Synced. Next ping and sync in %d seconds", SYNC_RATE_MILLIS / 1000));
+                Thread.sleep(SYNC_RATE_MILLIS);
+            } catch (InterruptedException e) {
+                System.out.println("Error in sync loop");
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void sync() {
         if(clientHolder.hasNetworkChanged()) {
-            System.out.println("Network changed...");
+            System.out.println("Network changed, restarting Syncer...");
             clientHolder.stop();
-            System.out.println("Client holder stopped");
             server.stop();
             clientHolder.start();
             if(clientHolder.isActive()) {
@@ -61,7 +78,7 @@ public class Syncer {
         if(!clientHolder.isActive()) return;
         var badClientAddresses = new ArrayList<byte[]>();
         for(var clientAddress : clientHolder.getClients()) {
-            Client client = new Client(port);
+            Client client = new Client(PORT);
             client.onConnected = s -> connectedToServer(s);
             client.connect(clientAddress);
             if(client.timedOut) badClientAddresses.add(clientAddress);
@@ -78,7 +95,7 @@ public class Syncer {
         endpoint.send(new LastModifiedPacket(syncFolder.getLastChangeOfFolder()));
         var rolePacket = (RolePacket) endpoint.read();
         var role = rolePacket.getRole();
-        System.out.println("got role");
+        System.out.println(String.format("got role: %s", role));
         switch(role) {
             case RECEIVER:
                 new Receiver(endpoint, syncFolder);
@@ -88,7 +105,6 @@ public class Syncer {
                 break;
             default:
         }
-
         removeFromSyncingClients(address);
     }
 
@@ -97,33 +113,31 @@ public class Syncer {
         var endpoint = new Endpoint(socket);
         var address = socket.getInetAddress().getAddress();
         if(!addToSyncingClients(address)) {
-            System.out.println("already connected...");
+            System.out.println("Already syncing with this client");
             return;
         }
         // clientHolder.addToClients(address);
         var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
-        var lastModifiedClient = lastModifiedPacket.getLastModified();
-        var lastModified = syncFolder.getLastChangeOfFolder();
+        var lastModifiedClient = lastModifiedPacket.getLastModified() / (60 * 1000);
+        var lastModified = syncFolder.getLastChangeOfFolder()  / (60 * 1000);
         System.out.println("lastModifiedClient: " + lastModifiedClient);
         System.out.println("lastModified: " + lastModified);
-        System.out.println("comparing last modified");
         if(lastModified != lastModifiedClient) {
             if(lastModified > lastModifiedClient) {
-                System.out.println("send receive packet and create sender");
+                System.out.println("Send receive role packet and create sender");
                 endpoint.send(new RolePacket(Role.RECEIVER));
                 new Sender(endpoint, syncFolder);
             }
             else {
-                System.out.println("send sender packet and create receiver");
+                System.out.println("Send sender role packet and create receiver");
                 endpoint.send(new RolePacket(Role.SENDER));
                 new Receiver(endpoint, syncFolder);
             }
         }
         else {
-            System.out.println("nothing to do...");
+            System.out.println("Nothing to do...");
             endpoint.send(new RolePacket(Role.NOTHING));
         }
-
         removeFromSyncingClients(address);
     }
 
