@@ -16,15 +16,19 @@ public class Receiver {
             if(packet.packetType == PacketType.END_OF_SYNC) return;
             if(packet.packetType == PacketType.FILE) {
                 var filePacket = (FilePacket)packet;
+                System.out.println("FilePacket  Path: " + filePacket.getFilePath() + ", Size: " + filePacket.getSize());
                 var syncFile = syncFolder.getSyncFile(filePacket.getFilePath());
                 // createFolders(syncFolder.folder, filePacket.getFilePath());
                 if(filePacket.getSize() == 0) {
-                    if(syncFile != null) syncFile.delete();
-                    System.out.println("Delete packet for " + syncFile.getPath());
+                    if(syncFile != null) {
+                        syncFile.delete();
+                        System.out.println("SyncFile deleted");
+                    }
                 }
                 else {
-                    if(syncFile == null) 
+                    if(syncFile == null) {
                         syncFile = syncFolder.createSyncFile(filePacket.getFilePath());
+                    }
                     // endpoint.send(new BasePacket(PacketType.SEND_FILE));
                     System.out.println("Receiving file " + syncFile.getPath());
                     endpoint.receiveSyncFile(syncFile, filePacket.getSize());

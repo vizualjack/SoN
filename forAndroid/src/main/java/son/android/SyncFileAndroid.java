@@ -31,10 +31,13 @@ public class SyncFileAndroid extends SyncFile {
 
     @Override
     public String getPath() {
-        String lastSegment = file.getUri().getLastPathSegment();
-        String[] pathParts = lastSegment.split(baseFolder.getName());
-        String path = pathParts[pathParts.length-1];
-        return path.substring(1).replace("/", "\\");
+        String fullFilePath = file.getUri().getLastPathSegment();
+        String fullBaseFolderPath =  baseFolder.getUri().getLastPathSegment();
+        String realPath = fullFilePath.replace(fullBaseFolderPath + "/", "");
+        return realPath.replace("/", "\\");
+//        String[] pathParts = lastSegment.split(baseFolder.getName());
+//        String path = pathParts[pathParts.length-1];
+//        return path.substring(1).replace("/", "\\");
     }
 
     @Override

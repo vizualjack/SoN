@@ -22,7 +22,9 @@ public class SyncFolderPC extends SyncFolder {
         try {
             createFolders(syncFolder, path);
             var newFile = new File(syncFolder, path);
+            System.out.println("createSyncFile: Absolute path of new file: " + newFile.getAbsolutePath());
             newFile.createNewFile();
+            System.out.println("createSyncFile: File created");
             return new SyncFilePC(syncFolder, newFile);
         } catch (IOException e) {
             System.err.println("Can't create file");
@@ -43,13 +45,14 @@ public class SyncFolderPC extends SyncFolder {
     @Override
     public SyncFile getSyncFile(String filePath) {
         File file = new File(syncFolder, filePath);
+        System.out.println("getSyncFile: Absolute path of file: " + file.getAbsolutePath());
         if(!file.exists()) return null;
+        System.out.println("getSyncFile: file exists so i can return it");
         return new SyncFilePC(syncFolder, file);
     }
 
     private void createFolders(File baseFolder, String filePath) {
         var lastSlashIndex = filePath.lastIndexOf("\\");
-
         if(lastSlashIndex == -1) return;
         var foldersPath = filePath.substring(0, lastSlashIndex);
         new File(baseFolder, foldersPath).mkdirs();
