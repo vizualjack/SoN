@@ -89,8 +89,6 @@ public class SyncFilePC extends SyncFile {
     public String getPath() {
         var path = file.getPath();
         return path.replace(baseFolder.getPath() + "\\", "");
-        // var pathParts = path.split(baseFolder.getName());
-        // return pathParts[pathParts.length-1].substring(1);
     }
     
 }
