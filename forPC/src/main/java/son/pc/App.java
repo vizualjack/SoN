@@ -19,7 +19,6 @@ public class App {
             // System.err.println("No path set");
             // return;
         }
-  
         new Syncer(new SyncFolderPC(f)).syncLoop();
     }
 }

@@ -67,8 +67,6 @@ public class SyncFileAndroid extends SyncFile {
             fileInputStream = new FileInputStream(inputPfd.getFileDescriptor());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return fileInputStream;
     }
@@ -90,8 +88,6 @@ public class SyncFileAndroid extends SyncFile {
                     openFileDescriptor(file.getUri(), "w");
             fileOutputStream = new FileOutputStream(outputPfd.getFileDescriptor());
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
         return fileOutputStream;

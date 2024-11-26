@@ -20,26 +20,28 @@ public class ClientHolder implements Runnable{
     public ClientHolder(int port) {
         this.port = port;
         clients = new ArrayList<byte[]>();
+        if(!createUdpEndpoint()) System.out.println("ClientHolder - No udp endpoint so i'm useless");
     }
 
-    public byte[] getLocalAddress() {
+    private byte[] getLocalAddress() {
         byte[] address = null;
-        try(DatagramSocket s = new DatagramSocket()) {
-            s.connect(InetAddress.getByAddress(new byte[]{1,1,1,1}), 1337);
-            address = s.getLocalAddress().getAddress();
-        } catch(SocketException | UnknownHostException e) {
+        try {
+            udpEndpoint.connect(InetAddress.getByAddress(new byte[]{1,1,1,1}), 1337);
+            address = udpEndpoint.getLocalAddress().getAddress();
+            udpEndpoint.disconnect();
+        } catch(Exception e) {
             e.printStackTrace();
         }
         return address;
     }
 
     public boolean hasNetworkChanged() {
-        byte[] locaAddr = getLocalAddress();
-        if(InetAddressHelper.compareAddresses(locaAddr, selfAddress)) {
+        byte[] localAddress = getLocalAddress();
+        if(InetAddressHelper.compareAddresses(localAddress, selfAddress)) {
             return false;
         }
         else {
-            System.out.println("Changed from addr " + InetAddressHelper.toString(selfAddress) + " to " + InetAddressHelper.toString(locaAddr));
+            System.out.println("Changed from addr " + InetAddressHelper.toString(selfAddress) + " to " + InetAddressHelper.toString(localAddress));
             return true;
         }    
     }
@@ -63,29 +65,24 @@ public class ClientHolder implements Runnable{
 
     public void stop() {
         if(t == null) return;
-        System.out.println("Stopping client holder...");
+        System.out.println("ClientHolder - Stopping client holder...");
         udpEndpoint.close();
         udpEndpoint = null;
         try {
             t.join();
         } catch (InterruptedException e) {
-            System.err.println("Can't join client holder thread");
+            System.err.println("ClientHolder - Can't join client holder thread");
             e.printStackTrace();
         }
         t = null;
         clients.clear();
-        System.out.println("Cleared client list");
-        System.out.println("Client holder stopped");
+        System.out.println("ClientHolder - Cleared client list");
+        System.out.println("ClientHolder - Client holder stopped");
     }
 
     public void start() {
         selfAddress = getLocalAddress();
         if(!InetAddressHelper.isLocalAddress(selfAddress)) return;
-        try {
-            udpEndpoint = new DatagramSocket(port);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
         if(t != null) return;
         t = new Thread(this);
         t.start();
@@ -106,7 +103,7 @@ public class ClientHolder implements Runnable{
                 if(packetAsStr.contentEquals(msg)) {
                     var curAddress = packet.getAddress().getAddress();
                     if(InetAddressHelper.compareAddresses(curAddress, selfAddress)) continue;
-                    if(addToClients(curAddress)) System.out.println("New SoN User found: " + InetAddressHelper.toString(curAddress));
+                    if(addToClients(curAddress)) System.out.println("ClientHolder - New SoN User found: " + InetAddressHelper.toString(curAddress));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -115,12 +112,15 @@ public class ClientHolder implements Runnable{
     }
 
     public void pingToClients() {
-        // System.out.println("sendPacketToAll");
+        if(udpEndpoint == null) return;
         try {
             var bytes = msg.getBytes();
             var broadcastAddress = selfAddress.clone();
+//            broadcastAddress[0] = (byte)10;
+//            broadcastAddress[1] = (byte)0;
+//            broadcastAddress[2] = (byte)2;
             broadcastAddress[3] = (byte)255;
-            System.out.println("Ping to all client"); // + InetAddressHelper.toString(broadcastAddress));
+            System.out.println("ClientHolder - Ping to all clients: " + InetAddressHelper.toString(broadcastAddress));
             var inetBroadcastAddress = InetAddress.getByAddress(broadcastAddress);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, inetBroadcastAddress, port);
             udpEndpoint.send(packet);
@@ -135,5 +135,16 @@ public class ClientHolder implements Runnable{
 
     public boolean isActive() {
         return t != null;
+    }
+
+    private boolean createUdpEndpoint() {
+        try {
+            udpEndpoint = new DatagramSocket(port);
+            return true;
+        } catch (SocketException e) {
+            System.out.println("ClientHolder - Couldn't create DatagramSocket caused by: ");
+            e.printStackTrace();
+            return false;
+        }
     }
 }

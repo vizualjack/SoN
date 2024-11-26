@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("MainActivity - onCreate");
         //savePath(null);
         startSyncer();
         super.onCreate(savedInstanceState);
@@ -71,19 +72,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void startSyncer() {
         if(getPath() == null) {
-            System.out.println("Open directory chooser");
+            System.out.println("MainActivity - Open directory chooser");
             openDirectory();
         }
         else {
-            System.out.println("Start sync service");
-            Intent intent = new Intent(getApplicationContext(), SyncerActivity.class);
-            getApplicationContext().startForegroundService(intent);
+            System.out.println("MainActivity - Start sync service");
+//            Intent intent = new Intent(getApplicationContext(), SyncerActivity.class);
+//            getApplicationContext().startForegroundService(intent);
         }
     }
 
 
     public void openDirectory() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         startActivityForResult(intent, MY_RESULT_CODE_FILECHOOSER);
     }
 
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent resultData) {
+        System.out.println("MainActivity - onActivityResult: " + requestCode);
         super.onActivityResult(requestCode, resultCode, resultData);
         if (requestCode == MY_RESULT_CODE_FILECHOOSER && resultCode == Activity.RESULT_OK) {
             Uri uri = null;
@@ -106,12 +111,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void savePath(String path) {
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        SharedPreferences.Editor editor = getSharedPreferences("MyAppPrefs", MODE_PRIVATE).edit();
         editor.putString(PATH_KEY, path);
         editor.apply();
     }
 
     private String getPath() {
-        return PreferenceManager.getDefaultSharedPreferences(this).getString(PATH_KEY, null);
+        return getSharedPreferences("MyAppPrefs", MODE_PRIVATE).getString(PATH_KEY, null);
     }
 }

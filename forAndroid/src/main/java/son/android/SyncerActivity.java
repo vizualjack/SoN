@@ -18,6 +18,7 @@ import son.Syncer;
 public class SyncerActivity extends Service {
     Syncer syncer;
     Thread syncerThread;
+    boolean started = false;
 
     @Nullable
     @Override
@@ -27,6 +28,11 @@ public class SyncerActivity extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(started) {
+            System.out.println("SyncerActivity - Syncer already started");
+            return START_NOT_STICKY;
+        }
+        started = true;
         String channelId = createNotificationChannel("SYNCER_MESSAGE", "Syncer Channel");
         Notification notification = new Notification.Builder(getApplicationContext(), channelId)
                 .setContentTitle("Syncer")

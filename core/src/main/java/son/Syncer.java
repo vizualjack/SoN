@@ -48,11 +48,9 @@ public class Syncer {
         System.out.println("Start sync loop");
         while(true) {
             try {
-                System.out.println("Send ping to all...");
                 clientHolder.pingToClients();
-                System.out.println("Syncing...");
                 sync();
-                System.out.println(String.format("Synced. Next ping and sync in %d seconds", SYNC_RATE_MILLIS / 1000));
+                System.out.println(String.format("Next ping and sync in %d seconds", SYNC_RATE_MILLIS / 1000));
                 Thread.sleep(SYNC_RATE_MILLIS);
             } catch (InterruptedException e) {
                 System.out.println("Error in sync loop");
@@ -76,6 +74,7 @@ public class Syncer {
             }
         }
         if(!clientHolder.isActive()) return;
+        System.out.println("Go through clients for syncing...");
         var badClientAddresses = new ArrayList<byte[]>();
         for(var clientAddress : clientHolder.getClients()) {
             Client client = new Client(PORT);
