@@ -26,6 +26,6 @@ The app should be self explained. You have to choose first a base folder and the
 
 
 # Development information
-This project is a java based one. So you first need to install a java development kit (jdk).
-For the pc version of the app you can use for example IntelliJ IDEA, its java integration is that nice it should be enough to open the project/repo/folder and it should do the rest.
+This project is a java based one.
+For the pc version of the app you can use for example IntelliJ IDEA, its java integration is that nice it should be enough to open the project/repo/folder and it should do the rest for you.
 For the android version android studio would be the choice as well just open the project/repo/folder and it should do the rest.
