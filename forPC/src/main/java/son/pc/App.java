@@ -12,12 +12,9 @@ public class App {
             f = new File(args[0]);
             System.out.println("Set syncFolder: " + f.getPath());
         }
-        else { 
-            System.out.println("Create test folder...");
-            f = new File("testFolder");
-            f.mkdir();
-            // System.err.println("No path set");
-            // return;
+        else {
+            System.err.println("No path set");
+            return;
         }
         new Syncer(new SyncFolderPC(f)).syncLoop();
     }

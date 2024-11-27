@@ -1,122 +1,100 @@
 package son.android;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SyncStatusObserver;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.FileUtils;
-import android.os.ParcelFileDescriptor;
-import android.preference.PreferenceManager;
-import android.provider.DocumentsContract;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Document;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.util.List;
-
-import son.Syncer;
-import son.network.ClientHolder;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int MY_RESULT_CODE_FILECHOOSER = 1337;
-    public static final String PATH_KEY = "SYNC_FOLDER";
+    private final String TEMPLATE_BASE_FOLDER = "Synchronisation base folder: %s";
+    private ActivityResultLauncher<Intent> openDocumentTreeLauncher;
+    private Preferences preferences = new Preferences(this);
+    private TextView folderText;
+    private Button selectFolderBtn;
+    private Button syncStartBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("MainActivity - onCreate");
-        //savePath(null);
-        startSyncer();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        Button btn = (Button)findViewById(R.id.button);
-//        btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(getBaseContext(), SyncerActivity.class);
-//                getApplicationContext().startForegroundService(intent);
-//            }
-//        });
+        getGuiElements();
+        registerDocumentLauncher();
+        refreshGuiElements();
+        selectFolderBtn.setOnClickListener(view -> launchDirectoryIntent());
+        syncStartBtn.setOnClickListener(view -> onStartButtonPressed());
     }
-
-    private void startSyncer() {
-        if(getPath() == null) {
-            System.out.println("MainActivity - Open directory chooser");
-            openDirectory();
-        }
-        else {
-            System.out.println("MainActivity - Start sync service");
-//            Intent intent = new Intent(getApplicationContext(), SyncerActivity.class);
-//            getApplicationContext().startForegroundService(intent);
-        }
+    private void onStartButtonPressed() {
+        if(checkNotificationPermissionGranted()) startSyncService();
+        else requestNotificationPermission();
     }
-
-
-    public void openDirectory() {
+    private boolean checkNotificationPermissionGranted() {
+        int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS);
+        boolean permissionGranted = permissionStatus == PackageManager.PERMISSION_GRANTED;
+        System.out.println("MainActivity - POST_NOTIFICATIONS permission granted: " + permissionGranted);
+        return permissionGranted;
+    }
+    private void requestNotificationPermission() {
+        System.out.println("MainActivity - Requesting POST_NOTIFICATIONS permission");
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1337);
+    }
+    private void startSyncService() {
+        System.out.println("MainActivity - Start sync service");
+        Intent intent = new Intent(getApplicationContext(), SyncerService.class);
+        ContextCompat.startForegroundService(this, intent);
+    }
+    private void launchDirectoryIntent() {
+        System.out.println("MainActivity - Open directory chooser");
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        startActivityForResult(intent, MY_RESULT_CODE_FILECHOOSER);
+        openDocumentTreeLauncher.launch(intent);
     }
-
-
-    @SuppressLint("WrongConstant")
-    @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 Intent resultData) {
-        System.out.println("MainActivity - onActivityResult: " + requestCode);
-        super.onActivityResult(requestCode, resultCode, resultData);
-        if (requestCode == MY_RESULT_CODE_FILECHOOSER && resultCode == Activity.RESULT_OK) {
-            Uri uri = null;
-            if (resultData != null) {
-                uri = resultData.getData();
-                int takeFlags = resultData.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                getContentResolver().takePersistableUriPermission(uri, takeFlags); //safe to just ask once for folder
-                savePath(uri.toString());
-            }
+    private void registerDocumentLauncher() {
+        openDocumentTreeLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        if (uri != null) {
+                            getContentResolver().takePersistableUriPermission(uri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            preferences.setBaseFolderPath(uri.toString());
+                            refreshGuiElements();
+                        }
+                    }
+                }
+        );
+    }
+    private void getGuiElements() {
+        folderText = findViewById(R.id.baseFolder);
+        selectFolderBtn = findViewById(R.id.selectFolder);
+        syncStartBtn = findViewById(R.id.startSyncService);
+    }
+    private void refreshGuiElements() {
+        String baseFolderPath = preferences.getBaseFolderPath();
+        if(baseFolderPath == null) {
+            syncStartBtn.setActivated(false);
+            folderText.setText(String.format(TEMPLATE_BASE_FOLDER, "Not selected"));
         }
-        startSyncer();
+        else {
+            syncStartBtn.setActivated(true);
+            DocumentFile documentFile = DocumentFile.fromTreeUri(getApplicationContext(), Uri.parse(baseFolderPath));
+            folderText.setText(String.format(TEMPLATE_BASE_FOLDER, documentFile.getName()));
+        }
     }
 
-    private void savePath(String path) {
-        SharedPreferences.Editor editor = getSharedPreferences("MyAppPrefs", MODE_PRIVATE).edit();
-        editor.putString(PATH_KEY, path);
-        editor.apply();
-    }
-
-    private String getPath() {
-        return getSharedPreferences("MyAppPrefs", MODE_PRIVATE).getString(PATH_KEY, null);
-    }
 }

@@ -3,10 +3,13 @@ package son.network;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ClientHolder implements Runnable{
@@ -24,15 +27,20 @@ public class ClientHolder implements Runnable{
     }
 
     private byte[] getLocalAddress() {
-        byte[] address = null;
         try {
-            udpEndpoint.connect(InetAddress.getByAddress(new byte[]{1,1,1,1}), 1337);
-            address = udpEndpoint.getLocalAddress().getAddress();
-            udpEndpoint.disconnect();
-        } catch(Exception e) {
+            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (!networkInterface.isLoopback() && networkInterface.isUp()) {
+                    for (InetAddress inetAddress : Collections.list(networkInterface.getInetAddresses())) {
+                        if (inetAddress instanceof Inet4Address) {
+                            return inetAddress.getAddress();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return address;
+        return null;
     }
 
     public boolean hasNetworkChanged() {
