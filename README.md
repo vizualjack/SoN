@@ -22,8 +22,10 @@ Please take a look at the release tab here in the repository.
 ### 2. Install the app
 Make sure you have allowed to install apk from an unknown source.
 ### 3. Start it!
-The app asks you first for a base directory.
+The app should be self explained. You have to choose first a base folder and then you can start the service.
 
 
 # Development information
-This project is a java based one. So you first need to install a java development kit (jdk). For example ...
+This project is a java based one. So you first need to install a java development kit (jdk).
+For the pc version of the app you can use for example IntelliJ IDEA, its java integration is that nice it should be enough to open the project/repo/folder and it should do the rest.
+For the android version android studio would be the choice as well just open the project/repo/folder and it should do the rest.
