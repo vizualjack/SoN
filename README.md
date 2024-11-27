@@ -9,7 +9,7 @@
 
 ## Setup for windows pc
 ### 1. Install a jre
-You can find it here.
+You can find it [here](https://www.java.com/de/download/manual.jsp).
 ### 2. Download the .jar file
 Please take a look at the release tab here in the repository.
 ### 3. Start it!
