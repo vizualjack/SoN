@@ -36,7 +36,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.register('assembleExecutableJar', Jar) {
+tasks.register('build jar file', Jar) {
     dependsOn ':forPC:jar'  // Depends on the core module's jar task
 
     from project(':forPC').sourceSets.main.output
