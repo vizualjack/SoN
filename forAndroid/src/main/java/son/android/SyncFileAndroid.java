@@ -8,6 +8,9 @@ import android.provider.DocumentsContract;
 
 import androidx.documentfile.provider.DocumentFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,6 +20,8 @@ import java.io.IOException;
 import son.SyncFile;
 
 public class SyncFileAndroid extends SyncFile {
+    private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
+
     DocumentFile baseFolder, file;
     Context context;
     FileInputStream fileInputStream;
@@ -105,10 +110,10 @@ public class SyncFileAndroid extends SyncFile {
 
     @Override
     public void setLastModified(long lastModified) {
-        // dont work for android
+        // doesn't work for android
        try {
 //           file.getUri()
-           System.out.println("Set last modified ANDROID");
+           logger.debug("Set last modified ANDROID");
 //           ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(file.getUri(), "rw");
 //           if (pfd == null) {
 //               System.out.println("No ParcelFileDescriptor");

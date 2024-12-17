@@ -7,10 +7,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 import son.SyncFile;
 import son.network.packet.BasePacket;
 
 public class Endpoint {
+    private static final Logger logger = LoggerFactory.getLogger(Endpoint.class);
+
     Socket socket;
     int bufferSize = 16 * 1024;
 
@@ -26,7 +32,6 @@ public class Endpoint {
             byte[] buffer = new byte[bufferSize];
             long received = 0L;
             while((count = socketIn.read(buffer)) > 0) {
-                // System.out.println("receive count:" + count);
                 fileStream.write(buffer, 0, count);
                 received += count;
                 if(received >= size) break;
@@ -47,7 +52,6 @@ public class Endpoint {
             int count;
             byte[] buffer = new byte[bufferSize];
             while((count = fileStream.read(buffer)) > 0) {
-                // System.out.println("send count:" + count);
                 socketOut.write(buffer, 0, count);
             }
             syncFile.closeInputStream();
@@ -64,14 +68,9 @@ public class Endpoint {
         try {
             packet = (BasePacket) new ObjectInputStream(socket.getInputStream()).readObject();
         }
-        catch(ClassNotFoundException ex) {
-            System.err.println("class not found");   
-            ex.printStackTrace();  
+        catch(ClassNotFoundException | IOException ex) {
+            logger.error("Can't receive base packet: ", ex);
         }
-        catch(IOException ex) {
-            System.err.println("Can't read");   
-            ex.printStackTrace();         
-        }   
         return packet;
     }
 
@@ -80,8 +79,7 @@ public class Endpoint {
             new ObjectOutputStream(socket.getOutputStream()).writeObject(packet);
         }
         catch(IOException ex) {
-            System.err.println("Can't send");   
-            ex.printStackTrace();         
+            logger.error("Can't send base packet: ", ex);
         }
     }
 
@@ -92,7 +90,7 @@ public class Endpoint {
             message = receiverStream.readUTF();
         }
         catch(IOException ex) {  
-            ex.printStackTrace();         
+            logger.error("Can't receive string packet: ", ex);
         }
         return message;
     }
@@ -104,7 +102,7 @@ public class Endpoint {
             senderStream.flush();
         }
         catch(IOException ex) {
-            ex.printStackTrace();         
+            logger.error("Can't send string packet: ", ex);
         }
     }
 }

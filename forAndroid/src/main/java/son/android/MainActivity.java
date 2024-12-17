@@ -16,7 +16,13 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
+import son.LoggerSettings;
+
 public class MainActivity extends AppCompatActivity {
+//    private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
 
     private final String TEMPLATE_BASE_FOLDER = "Synchronisation base folder: %s";
     private ActivityResultLauncher<Intent> openDocumentTreeLauncher;
@@ -27,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("MainActivity - onCreate");
+        LoggerFactory.getLogger(MainActivity.class);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getGuiElements();
@@ -43,20 +49,20 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkNotificationPermissionGranted() {
         int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS);
         boolean permissionGranted = permissionStatus == PackageManager.PERMISSION_GRANTED;
-        System.out.println("MainActivity - POST_NOTIFICATIONS permission granted: " + permissionGranted);
+//        logger.debug("POST_NOTIFICATIONS permission granted: " + permissionGranted);
         return permissionGranted;
     }
     private void requestNotificationPermission() {
-        System.out.println("MainActivity - Requesting POST_NOTIFICATIONS permission");
+//        logger.debug("Requesting POST_NOTIFICATIONS permission");
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1337);
     }
     private void startSyncService() {
-        System.out.println("MainActivity - Start sync service");
+//        logger.debug("Start sync service");
         Intent intent = new Intent(getApplicationContext(), SyncerService.class);
         ContextCompat.startForegroundService(this, intent);
     }
     private void launchDirectoryIntent() {
-        System.out.println("MainActivity - Open directory chooser");
+//        logger.debug("Open directory chooser");
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

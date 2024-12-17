@@ -3,6 +3,10 @@ package son.sync;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 import son.MetaFile;
 import son.SyncFolder;
 import son.network.Endpoint;
@@ -12,6 +16,8 @@ import son.network.packet.MetaFilesPacket;
 import son.network.packet.PacketType;
 
 public class Sender {
+    private static final Logger logger = LoggerFactory.getLogger(Sender.class);
+
     private static class FileTransfer {
         enum Type{TRANSFER, DELETE}
         Type type;
@@ -33,9 +39,10 @@ public class Sender {
                 var syncFile = syncFolder.getSyncFile(fileTransfer.filePath);
                 endpoint.send(new FilePacket(fileTransfer.filePath, syncFile.getSize(), syncFile.getLastModified()));
                 endpoint.sendSyncFile(syncFile);
+                logger.info("Sent file :", syncFile.getPath());
             }
             if(endpoint.read().packetType != PacketType.READY) {
-                System.out.println("Not ready for next file... thats weird, i will break here");
+                logger.error("Other sync device isn't ready, there's something wrong");
                 break;
             }
         }

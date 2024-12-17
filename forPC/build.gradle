@@ -24,6 +24,8 @@ dependencies {
     implementation 'com.google.guava:guava:30.1.1-jre'
 
     implementation project(':core')
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
 }
 
 application {

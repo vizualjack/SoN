@@ -15,9 +15,13 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import son.Syncer;
 
 public class SyncerService extends Service {
+    private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
     Syncer syncer;
     Thread syncerThread;
     boolean started = false;
@@ -33,14 +37,13 @@ public class SyncerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("SyncerService - onStartCommand");
         if(intent != null && ACTION_STOP.equals(intent.getAction())) {
             syncerThread.interrupt();
             stopSelf();
             return START_STICKY;
         }
         if(started) {
-            System.out.println("SyncerService - already started");
+            logger.debug("Already started");
             return START_NOT_STICKY;
         }
         started = true;
@@ -78,17 +81,17 @@ public class SyncerService extends Service {
         channel.setDescription("Syncer Channel for Foreground Service");
         NotificationManager manager = getSystemService(NotificationManager.class);
         if (manager != null) manager.createNotificationChannel(channel);
-        else System.out.println("Can't create notification channel");
+        else logger.error("Can't create notification channel");
         return channelId;
     }
 
     private void start() {
-        System.out.println("SyncerService - starting syncer thread");
+        logger.debug("Starting syncer thread");
         syncerThread = new Thread(() -> {
-            System.out.println("SyncerService - thread started");
+            logger.debug("Thread started");
             String path = preferences.getBaseFolderPath();
             if(path == null) {
-                System.out.println("SyncerService - thread ending, cause path is null");
+                logger.debug("Thread ending, cause path is null");
                 return;
             };
             syncer = new Syncer(new SyncFolderAndroid(Uri.parse(path), this));

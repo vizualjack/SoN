@@ -5,12 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import son.MetaFile;
 import son.SyncFile;
 import son.SyncFolder;
 
 public class SyncFolderPC extends SyncFolder {
-   public File syncFolder;
+    private static final Logger logger = LoggerFactory.getLogger(SyncFolderPC.class);
+
+    public File syncFolder;
 
     public SyncFolderPC(File syncFolder) {
         if(!syncFolder.isDirectory()) throw new RuntimeException("I need a folder/directory");
@@ -22,12 +27,11 @@ public class SyncFolderPC extends SyncFolder {
         try {
             createFolders(syncFolder, path);
             var newFile = new File(syncFolder, path);
-            System.out.println("createSyncFile: Absolute path of new file: " + newFile.getAbsolutePath());
             newFile.createNewFile();
-            System.out.println("createSyncFile: File created");
+            logger.debug("File created {}", newFile.getAbsolutePath());
             return new SyncFilePC(syncFolder, newFile);
         } catch (IOException e) {
-            System.err.println("Can't create file");
+            logger.error("Can't create file");
             e.printStackTrace();
         }
         return null;
@@ -45,9 +49,9 @@ public class SyncFolderPC extends SyncFolder {
     @Override
     public SyncFile getSyncFile(String filePath) {
         File file = new File(syncFolder, filePath);
-        System.out.println("getSyncFile: Absolute path of file: " + file.getAbsolutePath());
+        logger.debug("Searching for file {}", file.getAbsolutePath());
         if(!file.exists()) return null;
-        System.out.println("getSyncFile: file exists so i can return it");
+        logger.debug("Got file {}", file.getAbsolutePath());
         return new SyncFilePC(syncFolder, file);
     }
 

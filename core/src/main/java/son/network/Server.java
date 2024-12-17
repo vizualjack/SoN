@@ -5,7 +5,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.function.Consumer;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 public class Server implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(Endpoint.class);
+
     public Consumer<Socket> onConnected;
 
     int port;
@@ -28,8 +33,7 @@ public class Server implements Runnable {
             server = null;
             thread.join();
         } catch (InterruptedException | IOException e) {
-            System.err.println("can't close or join serverthread");
-            e.printStackTrace();
+            logger.error("Can't close or join serverthread: ", e);
         }
         thread = null;
     }
@@ -39,17 +43,16 @@ public class Server implements Runnable {
         thread = new Thread(this);
         try {
             server = new ServerSocket(port);
-            System.out.println("Sync Server created");
+            logger.debug("Created");
         } catch (IOException e) {
-            System.err.println("Can't create serversocket");
-            e.printStackTrace();
+            logger.error("Can't create ServerSocket", e);
         }
         thread.start();
     }
 
     @Override
     public void run() {
-        System.out.println("Sync Server started");
+        logger.info("Started");
         while(server != null) {
             try {
                 Socket client = server.accept(); 

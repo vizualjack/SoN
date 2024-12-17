@@ -14,8 +14,12 @@ import son.network.packet.RolePacket;
 import son.network.packet.RolePacket.Role;
 import son.sync.Receiver;
 import son.sync.Sender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Syncer {
+    private static final Logger logger = LoggerFactory.getLogger(Syncer.class);
+    
     final int SYNC_RATE_MILLIS = 30000;
     final int PORT = 1337;
     Server server;
@@ -45,36 +49,34 @@ public class Syncer {
     }
 
     public void syncLoop() {
-        System.out.println("Start sync loop");
+        logger.info("Start sync loop");
         while(true) {
             try {
                 clientHolder.pingToClients();
                 sync();
-                System.out.println(String.format("Next ping and sync in %d seconds", SYNC_RATE_MILLIS / 1000));
+                logger.debug(String.format("Next ping and sync in %d seconds", SYNC_RATE_MILLIS / 1000));
                 Thread.sleep(SYNC_RATE_MILLIS);
             } catch (InterruptedException e) {
-                System.out.println("Error in sync loop");
-                e.printStackTrace();
+                logger.error("Error in sync loop: ", e);
             }
         }
     }
 
     public void sync() {
         if(clientHolder.hasNetworkChanged()) {
-            System.out.println("Network changed, restarting Syncer...");
+            logger.debug("Network changed, restarting Syncer...");
             clientHolder.stop();
             server.stop();
             clientHolder.start();
             if(clientHolder.isActive()) {
                 server.start();
-                System.out.println("Syncer restarted");
+                logger.debug("Syncer restarted");
             }
             else {
-                System.out.println("Network is not a local one");
+                logger.debug("Network is not a local one");
             }
         }
         if(!clientHolder.isActive()) return;
-        System.out.println("Go through clients for syncing...");
         var badClientAddresses = new ArrayList<byte[]>();
         for(var clientAddress : clientHolder.getClients()) {
             Client client = new Client(PORT);
@@ -82,19 +84,19 @@ public class Syncer {
             client.connect(clientAddress);
             if(client.timedOut) badClientAddresses.add(clientAddress);
         }
-        for(var badClientAddress : badClientAddresses) 
+        for(var badClientAddress : badClientAddresses)
             clientHolder.remove(badClientAddress);
     }
 
     void connectedToServer(Socket socket) {
-        System.out.println("Connected to server");
+        logger.debug("Connected to server");
         var endpoint = new Endpoint(socket);
         var address = socket.getInetAddress().getAddress();
         if(!addToSyncingClients(address)) return;
         endpoint.send(new LastModifiedPacket(syncFolder.getLastChangeOfFolder()));
         var rolePacket = (RolePacket) endpoint.read();
         var role = rolePacket.getRole();
-        System.out.println(String.format("got role: %s", role));
+        logger.debug(String.format("got role: %s", role));
         switch(role) {
             case RECEIVER:
                 new Receiver(endpoint, syncFolder);
@@ -108,33 +110,32 @@ public class Syncer {
     }
 
     void connectedToClient(Socket socket) {
-        System.out.println("Connected to client");
+        logger.debug("Connected to client");
         var endpoint = new Endpoint(socket);
         var address = socket.getInetAddress().getAddress();
         if(!addToSyncingClients(address)) {
-            System.out.println("Already syncing with this client");
+            logger.debug("Already syncing with this client");
             return;
         }
-        // clientHolder.addToClients(address);
         var lastModifiedPacket = (LastModifiedPacket) endpoint.read();
         var lastModifiedClient = lastModifiedPacket.getLastModified() / (60 * 1000);
         var lastModified = syncFolder.getLastChangeOfFolder()  / (60 * 1000);
-        System.out.println("lastModifiedClient: " + lastModifiedClient);
-        System.out.println("lastModified: " + lastModified);
+        logger.debug("Sync partner's last modified time: " + lastModifiedClient);
+        logger.debug("My last modified: " + lastModified);
         if(lastModified != lastModifiedClient) {
             if(lastModified > lastModifiedClient) {
-                System.out.println("Send receive role packet and create sender");
+                logger.debug("Send receive role packet and create sender");
                 endpoint.send(new RolePacket(Role.RECEIVER));
                 new Sender(endpoint, syncFolder);
             }
             else {
-                System.out.println("Send sender role packet and create receiver");
+                logger.debug("Send sender role packet and create receiver");
                 endpoint.send(new RolePacket(Role.SENDER));
                 new Receiver(endpoint, syncFolder);
             }
         }
         else {
-            System.out.println("Nothing to do...");
+            logger.debug("Nothing to do...");
             endpoint.send(new RolePacket(Role.NOTHING));
         }
         removeFromSyncingClients(address);

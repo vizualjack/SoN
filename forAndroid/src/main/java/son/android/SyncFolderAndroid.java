@@ -5,6 +5,9 @@ import android.net.Uri;
 
 import androidx.documentfile.provider.DocumentFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +16,8 @@ import son.SyncFile;
 import son.SyncFolder;
 
 public class SyncFolderAndroid extends SyncFolder {
+    private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
+
     Uri folderUri;
     Context context;
     DocumentFile syncFolder;

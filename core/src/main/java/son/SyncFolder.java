@@ -1,10 +1,15 @@
 package son;
 
 import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 public abstract class SyncFolder {
+    private static final Logger logger = LoggerFactory.getLogger(SyncFolder.class);
     protected final String SYNC_FILE_NAME = ".lastSync";
 
     public long getLastSyncTime() {
@@ -23,7 +28,7 @@ public abstract class SyncFolder {
         var syncFile = getSyncFile(SYNC_FILE_NAME);
         if(syncFile == null) createSyncFile(SYNC_FILE_NAME);
         if (syncFile == null) {
-            System.out.println("No last sync file, i skip");
+            logger.debug("No last sync file, so i skip this");
             return;
         }
         try {

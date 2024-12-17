@@ -5,10 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import son.SyncFile;
 
 public class SyncFilePC extends SyncFile {
+    private static final Logger logger = LoggerFactory.getLogger(SyncFilePC.class);
 
     public File baseFolder, file;
     FileInputStream inputStream;
@@ -42,7 +45,7 @@ public class SyncFilePC extends SyncFile {
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            System.err.println("Can't found file");
+            logger.error("Can't found file");
             e.printStackTrace();
         }
         return inputStream;
@@ -53,7 +56,7 @@ public class SyncFilePC extends SyncFile {
         try {
             inputStream.close();
         } catch (IOException e) {
-            System.err.println("Can't close input stream");
+            logger.error("Can't close input stream");
             e.printStackTrace();
         }
     }
@@ -63,7 +66,7 @@ public class SyncFilePC extends SyncFile {
         try {
             outputStream = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
-            System.err.println("Can't found file");
+            logger.error("Can't found file");
             e.printStackTrace();
         }
         return outputStream;
@@ -74,14 +77,14 @@ public class SyncFilePC extends SyncFile {
         try {
             outputStream.close();
         } catch (IOException e) {
-            System.err.println("Can't close output stream");
+            logger.error("Can't close output stream");
             e.printStackTrace();
         }
     }
 
     @Override
     public void setLastModified(long lastModified) {
-        System.out.println("Set last modified PC");
+        logger.debug("Set last modified {} to file {}", lastModified, file.getName());
         file.setLastModified(lastModified);
     }
 

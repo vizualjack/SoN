@@ -7,7 +7,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.function.Consumer;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 public class Client {
+    private static final Logger logger = LoggerFactory.getLogger(Client.class);
+
     public Consumer<Socket> onConnected;
     public boolean timedOut = false;
 
@@ -22,7 +27,7 @@ public class Client {
         try {
             connect(InetAddress.getByName(address).getAddress());
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            logger.error("{}", e);
         }
     }
 
@@ -33,13 +38,13 @@ public class Client {
             server.close();
         }
         catch(UnknownHostException ex) {
-            System.err.println("unknown host, change it");
+            logger.error("Unknown host, change it or connect it");
         }
         catch(ConnectException ex) {
             timedOut = ex.getMessage().contains("Connection timed out");
         }
         catch(IOException ex) {
-            ex.printStackTrace();
+            logger.error("Exception: ", ex);
         }
     }
 }
