@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ClientHolder implements Runnable{
+    final byte[] LOCAL_ADDRESS = {127,0,0,1};
     DatagramSocket udpEndpoint;
     String msg = "hey i'm a son user";
     Thread t;
@@ -110,8 +111,9 @@ public class ClientHolder implements Runnable{
                 // System.out.println("packet as string: " + packetAsStr);
                 if(packetAsStr.contentEquals(msg)) {
                     var curAddress = packet.getAddress().getAddress();
-                    if(InetAddressHelper.compareAddresses(curAddress, selfAddress)) continue;
-                    if(addToClients(curAddress)) System.out.println("ClientHolder - New SoN User found: " + InetAddressHelper.toString(curAddress));
+                    if(InetAddressHelper.compareAddresses(curAddress, selfAddress) ||
+                    InetAddressHelper.compareAddresses(curAddress, LOCAL_ADDRESS)) continue;
+                    if(addToClients(curAddress)) System.out.println("New SoN User found: " + InetAddressHelper.toString(curAddress));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -124,11 +126,8 @@ public class ClientHolder implements Runnable{
         try {
             var bytes = msg.getBytes();
             var broadcastAddress = selfAddress.clone();
-//            broadcastAddress[0] = (byte)10;
-//            broadcastAddress[1] = (byte)0;
-//            broadcastAddress[2] = (byte)2;
             broadcastAddress[3] = (byte)255;
-            System.out.println("ClientHolder - Ping to all clients: " + InetAddressHelper.toString(broadcastAddress));
+            System.out.println("Broadcasting to all local network clients");
             var inetBroadcastAddress = InetAddress.getByAddress(broadcastAddress);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, inetBroadcastAddress, port);
             udpEndpoint.send(packet);
