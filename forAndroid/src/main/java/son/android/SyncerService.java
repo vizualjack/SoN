@@ -5,27 +5,23 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Level;
 import son.Syncer;
 
 public class SyncerService extends Service {
+    public static boolean running = false;
     private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
     Syncer syncer;
     Thread syncerThread;
-    boolean started = false;
     private static final String ACTION_STOP = "ACTION_STOP";
     private Preferences preferences = new Preferences(this);
     private Notification notification;
@@ -42,13 +38,14 @@ public class SyncerService extends Service {
         if(intent != null && ACTION_STOP.equals(intent.getAction())) {
             syncerThread.interrupt();
             stopSelf();
+            running = false;
             return START_STICKY;
         }
-        if(started) {
-            logger.debug("Already started");
+        if(running) {
+            logger.debug("Already running");
             return START_NOT_STICKY;
         }
-        started = true;
+        running = true;
         createNotification();
         startForeground(1337, notification);
         start();

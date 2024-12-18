@@ -11,25 +11,31 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import ch.qos.logback.classic.Level;
-import son.android.LoggerSettings;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import son.Syncer;
 
 public class MainActivity extends AppCompatActivity {
     private static Logger logger;
-
-    private final String TEMPLATE_BASE_FOLDER = "Synchronisation base folder: %s";
     private ActivityResultLauncher<Intent> openDocumentTreeLauncher;
     private Preferences preferences = new Preferences(this);
-    private TextView folderText;
-    private Button selectFolderBtn;
+    private ImageButton selectFolderBtn;
+    private EditText selectFolderText;
     private Button syncStartBtn;
 
     @Override
@@ -38,13 +44,17 @@ public class MainActivity extends AppCompatActivity {
         logger = LoggerFactory.getLogger(MainActivity.class);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        makeHeaderLettersBold();
         getGuiElements();
         registerDocumentLauncher();
         refreshGuiElements();
         selectFolderBtn.setOnClickListener(view -> launchDirectoryIntent());
+        selectFolderText.setOnClickListener(view -> launchDirectoryIntent());
         syncStartBtn.setOnClickListener(view -> onStartButtonPressed());
+        logger.debug("Current service status: {}", SyncerService.running);
     }
     private void onStartButtonPressed() {
+        if (preferences.getBaseFolderPath() == null) return;
         if(checkNotificationPermissionGranted()) startSyncService();
         else requestNotificationPermission();
     }
@@ -59,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1337);
     }
     private void startSyncService() {
+        logger.debug("Current service status: {}", SyncerService.running);
         logger.debug("Start sync service");
         Intent intent = new Intent(getApplicationContext(), SyncerService.class);
         ContextCompat.startForegroundService(this, intent);
@@ -88,21 +99,34 @@ public class MainActivity extends AppCompatActivity {
         );
     }
     private void getGuiElements() {
-        folderText = findViewById(R.id.baseFolder);
-        selectFolderBtn = findViewById(R.id.selectFolder);
+        selectFolderBtn = findViewById(R.id.selectFolderBtn);
+        selectFolderText = findViewById(R.id.selectFolderText);
         syncStartBtn = findViewById(R.id.startSyncService);
     }
     private void refreshGuiElements() {
         String baseFolderPath = preferences.getBaseFolderPath();
         if(baseFolderPath == null) {
             syncStartBtn.setActivated(false);
-            folderText.setText(String.format(TEMPLATE_BASE_FOLDER, "Not selected"));
+            selectFolderText.setText("Please select");
         }
         else {
             syncStartBtn.setActivated(true);
-            DocumentFile documentFile = DocumentFile.fromTreeUri(getApplicationContext(), Uri.parse(baseFolderPath));
-            folderText.setText(String.format(TEMPLATE_BASE_FOLDER, documentFile.getName()));
+            try {
+                String decodedPath = URLDecoder.decode(Uri.parse(baseFolderPath).getLastPathSegment(), "UTF-8");
+                selectFolderText.setText("/" + decodedPath.split(":")[1]);
+            } catch (UnsupportedEncodingException ex) {
+                logger.error("Can't decode path: {}", baseFolderPath);
+            }
         }
+    }
+
+    private void makeHeaderLettersBold() {
+        TextView headerText = findViewById(R.id.header);
+        SpannableString styledHeaderText = new SpannableString("Synchronisation over Network");
+        styledHeaderText.setSpan(new StyleSpan(Typeface.BOLD), 0,1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        styledHeaderText.setSpan(new StyleSpan(Typeface.BOLD), 16,17, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        styledHeaderText.setSpan(new StyleSpan(Typeface.BOLD), 21,22, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        headerText.setText(styledHeaderText);
     }
 
 }
