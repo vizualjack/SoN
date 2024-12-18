@@ -98,6 +98,26 @@
                 app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/logContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statusLine"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="#EFEFEF"
+        android:padding="8dp">
+        <TextView
+            android:id="@+id/logTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="This is the log content. It can be multiline and display detailed information."
+            android:textSize="14sp"
+            android:textColor="#000000" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/startSyncService"
         android:layout_width="wrap_content"
@@ -108,7 +128,6 @@
         android:backgroundTint="@color/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statusLine" />
-
+        app:layout_constraintTop_toBottomOf="@+id/logContainer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
