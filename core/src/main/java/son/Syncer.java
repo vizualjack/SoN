@@ -25,6 +25,7 @@ public class Syncer {
     Server server;
     SyncFolder syncFolder;
     ClientHolder clientHolder;
+    boolean stopping = false;
 
     List<byte[]> syncingClients = new ArrayList<>();
 
@@ -35,17 +36,23 @@ public class Syncer {
         clientHolder.start();
     }
 
-    public Syncer(SyncFolder syncFolder, ClientHolder clientHolder) {
-        this.syncFolder = syncFolder;
-        this.clientHolder = clientHolder;
-        startServer();
-        clientHolder.start();
-    }
+//    public Syncer(SyncFolder syncFolder, ClientHolder clientHolder) {
+//        this.syncFolder = syncFolder;
+//        this.clientHolder = clientHolder;
+//        startServer();
+//        clientHolder.start();
+//    }
 
     private void startServer() {
         server = new Server(PORT);
         server.onConnected = s -> connectedToClient(s);
         server.start();
+    }
+
+    public void stop() {
+        stopping = true;
+        clientHolder.stop();
+        server.stop();
     }
 
     public void syncLoop() {
@@ -57,12 +64,13 @@ public class Syncer {
                 logger.debug(String.format("Next ping and sync in %d seconds", SYNC_RATE_MILLIS / 1000));
                 Thread.sleep(SYNC_RATE_MILLIS);
             } catch (InterruptedException e) {
+                if(stopping)  return;
                 logger.error("Error in sync loop: ", e);
             }
         }
     }
 
-    public void sync() {
+    private void sync() {
         if(clientHolder.hasNetworkChanged()) {
             logger.debug("Network changed, restarting Syncer...");
             clientHolder.stop();
@@ -88,7 +96,7 @@ public class Syncer {
             clientHolder.remove(badClientAddress);
     }
 
-    void connectedToServer(Socket socket) {
+    private void connectedToServer(Socket socket) {
         logger.debug("Connected to server");
         var endpoint = new Endpoint(socket);
         var address = socket.getInetAddress().getAddress();

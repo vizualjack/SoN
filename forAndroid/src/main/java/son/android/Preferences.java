@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 public class Preferences {
     private final String FOLDER_KEY = "SYNC_FOLDER";
+    private final String LOGGING_KEY = "FILE_LOGGING";
 
     private android.content.ContextWrapper contextWrapper;
 
@@ -20,6 +21,15 @@ public class Preferences {
     }
     public void setBaseFolderPath(String newBaseFolderPath) {
         setStringPreference(FOLDER_KEY, newBaseFolderPath);
+    }
+
+    public boolean isFileLoggingActivated() {
+        String boolText = getStringPreference(LOGGING_KEY);
+        if(boolText == null) return false;
+        return Boolean.parseBoolean(boolText);
+    }
+    public void setLoggingActivated(boolean newIsLoggingActivated) {
+        setStringPreference(LOGGING_KEY, Boolean.toString(newIsLoggingActivated));
     }
 
     private String getStringPreference(String key) {

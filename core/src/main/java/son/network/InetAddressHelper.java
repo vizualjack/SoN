@@ -13,8 +13,9 @@ public class InetAddressHelper {
     public static boolean isLocalAddress(byte[] addr) {
         return  addr != null &&
                 addr.length == 4 &&
-                addr[0] == (byte)192 &&
-                addr[1] == (byte)168;
+                ((addr[0] == (byte)192 && addr[1] == (byte)168) ||
+                (addr[0] == (byte)10) ||
+                (addr[0] == (byte)172));
     }
 
     public static String toString(byte[] addr) {

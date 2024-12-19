@@ -7,7 +7,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,10 +17,11 @@ import org.slf4j.LoggerFactory;
 public class ClientHolder implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Client.class);
 
-    final byte[] LOCAL_ADDRESS = {127,0,0,1};
+    private final byte[] LOCAL_ADDRESS = {127,0,0,1};
+    private final byte[] VIRTUAL_PHONE_ADDRESS = {10,0,2,16};  // cause getting local address sucks at virtual phone in android studio
     DatagramSocket udpEndpoint;
     String msg = "hey i'm a son user";
-    Thread t;
+    Thread thread;
     int port;
     List<byte[]> clients;
     byte[] selfAddress;
@@ -78,28 +78,32 @@ public class ClientHolder implements Runnable {
     }
 
     public void stop() {
-        if(t == null) return;
+        if(thread == null) return;
         logger.debug("Stopping client holder...");
         udpEndpoint.close();
         udpEndpoint = null;
         try {
-            t.join();
+            thread.join();
         } catch (InterruptedException e) {
             logger.error("Can't join client holder thread");
             e.printStackTrace();
         }
-        t = null;
+        thread = null;
         clients.clear();
         logger.debug("Cleared client list");
         logger.debug("Client holder stopped");
     }
 
     public void start() {
+        if(thread != null) return;
         selfAddress = getLocalAddress();
-        if(!InetAddressHelper.isLocalAddress(selfAddress)) return;
-        if(t != null) return;
-        t = new Thread(this);
-        t.start();
+        if(!InetAddressHelper.isLocalAddress(selfAddress)) {
+            udpEndpoint.close();
+            udpEndpoint = null;
+            return;
+        }
+        thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -114,9 +118,10 @@ public class ClientHolder implements Runnable {
                 if(packetAsStr.contentEquals(msg)) {
                     var curAddress = packet.getAddress().getAddress();
                     if(InetAddressHelper.compareAddresses(curAddress, selfAddress) ||
-                    InetAddressHelper.compareAddresses(curAddress, LOCAL_ADDRESS)) continue;
+                    InetAddressHelper.compareAddresses(curAddress, LOCAL_ADDRESS) ||
+                    InetAddressHelper.compareAddresses(curAddress, VIRTUAL_PHONE_ADDRESS)) continue;
                     if(!addToClients(curAddress)) continue;
-                    if(logger.isDebugEnabled()) logger.debug("New SoN User appeared: ", InetAddressHelper.toString(curAddress));
+                    if(logger.isDebugEnabled()) logger.debug("New SoN User appeared: {}", InetAddressHelper.toString(curAddress));
                     else logger.info("New SoN User appeared");
                 }
             } catch (Exception e) {
@@ -145,7 +150,7 @@ public class ClientHolder implements Runnable {
     }
 
     public boolean isActive() {
-        return t != null;
+        return thread != null;
     }
 
     private boolean createUdpEndpoint() {

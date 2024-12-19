@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:id="@+id/baseLayout"
     tools:context=".MainActivity">
 
     <TextView
@@ -19,26 +20,39 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <TextView
-        android:id="@+id/baseFolder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Synchronisation base folder:"
-        android:textColor="@color/text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/selectFolderLine"
-        android:layout_width="wrap_content"
+        android:id="@+id/centerContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/baseFolder">
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <TextView
+            android:id="@+id/baseFolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Synchronisation base folder:"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/selectFolderLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/baseFolder">
             <ImageButton
                 android:id="@+id/selectFolderBtn"
                 android:layout_width="wrap_content"
@@ -55,38 +69,39 @@
                 android:text="Please select"
                 android:textColor="@color/text"
                 android:backgroundTint="@color/text"/>
-    </LinearLayout>
+        </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/statusHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Synchronisation service status:"
-        android:textColor="@color/text"
-        android:layout_marginTop="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectFolderLine" />
-
-    <LinearLayout
-        android:id="@+id/statusLine"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="7dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statusHeader">
-        <View
-            android:id="@+id/statusDot"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:background="@drawable/status_dot"
+        <TextView
+            android:id="@+id/statusHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Synchronisation service status:"
+            android:textColor="@color/text"
+            android:layout_marginTop="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/statusText" />
+            app:layout_constraintTop_toBottomOf="@+id/selectFolderLine" />
+
+        <LinearLayout
+            android:id="@+id/statusLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/statusHeader">
+            <View
+                android:id="@+id/statusDot"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="@drawable/status_dot"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statusText" />
             <TextView
                 android:id="@+id/statusText"
                 android:layout_width="wrap_content"
@@ -96,38 +111,71 @@
                 android:layout_marginStart="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
-    </LinearLayout>
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/logContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statusLine"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:background="#EFEFEF"
-        android:padding="8dp">
-        <TextView
-            android:id="@+id/logTextView"
+        <ScrollView
+            android:id="@+id/logsContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="This is the log content. It can be multiline and display detailed information."
-            android:textSize="14sp"
-            android:textColor="#000000" />
-    </LinearLayout>
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/statusLine"
+            android:background="@color/icon"
+            android:layout_marginHorizontal="10dp"
+            android:padding="8dp">
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/logsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/text"
+                    />
+            </HorizontalScrollView>
+        </ScrollView>
 
-    <Button
-        android:id="@+id/startSyncService"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Start sync service"
-        android:textColor="@color/text"
-        android:backgroundTint="@color/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logContainer" />
+
+        <Button
+            android:id="@+id/logSwitcher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Show logs"
+            android:textColor="@color/text"
+            android:backgroundTint="@color/button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logsContainer" />
+
+        <Button
+            android:id="@+id/startSyncService"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Start service"
+            android:textColor="@color/text"
+            android:backgroundTint="@color/button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logSwitcher" />
+
+        <Button
+            android:id="@+id/stopSyncService"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:text="Stop service"
+            android:textColor="@color/text"
+            android:backgroundTint="@color/button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/startSyncService" />
+
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
