@@ -33,7 +33,7 @@ public class Receiver {
                         syncFile = syncFolder.createSyncFile(filePacket.getFilePath());
                     }
                     endpoint.receiveSyncFile(syncFile, filePacket.getSize());
-                    logger.info("File received: " + syncFile.getPath());
+                    logger.info("File received: {}", syncFile.getPath());
                 }
                 endpoint.send(new BasePacket(PacketType.READY));
             }

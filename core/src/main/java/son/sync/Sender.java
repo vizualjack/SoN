@@ -39,7 +39,7 @@ public class Sender {
                 var syncFile = syncFolder.getSyncFile(fileTransfer.filePath);
                 endpoint.send(new FilePacket(fileTransfer.filePath, syncFile.getSize(), syncFile.getLastModified()));
                 endpoint.sendSyncFile(syncFile);
-                logger.info("Sent file :", syncFile.getPath());
+                logger.info("Sent file: {}", syncFile.getPath());
             }
             if(endpoint.read().packetType != PacketType.READY) {
                 logger.error("Other sync device isn't ready, there's something wrong");
