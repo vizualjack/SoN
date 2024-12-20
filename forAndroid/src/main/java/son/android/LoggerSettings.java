@@ -23,7 +23,6 @@ public class LoggerSettings {
     private static final String LOG_PATTERN_LOGCAT = "%msg%n";
     private static final Level LOG_LEVEL = BuildConfig.DEBUG ? Level.DEBUG : Level.INFO;
     private static final String LOG_PATTERN_FILE = "%d{yyyy-MM-dd HH:mm:ss} [%level] %logger{36} - %msg%n";
-    private static final String LOG_FILE_NAME = "logs.txt";
     private static final String LOG_FILE_APPENDER_NAME = "FILE";
 
     public static void apply() {
@@ -40,7 +39,7 @@ public class LoggerSettings {
         appender.setEncoder(encoder);
     }
 
-    public static void activateFileLogging(Context context) {
+    public static void activateFileLogging(Context context, String fileName) throws IOException {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         if(rootLogger.getAppender(LOG_FILE_APPENDER_NAME) != null) return;
@@ -51,12 +50,8 @@ public class LoggerSettings {
         FileAppender<ILoggingEvent> fileAppender = new FileAppender<>();
         fileAppender.setContext(loggerContext);
         fileAppender.setName(LOG_FILE_APPENDER_NAME);
-        File logFile = getLogFile(context);
-        try {
-            logFile.createNewFile();
-        } catch (IOException ex) {
-            return;
-        }
+        File logFile = getLogFile(context, fileName);
+        logFile.createNewFile();
         fileAppender.setFile(logFile.getAbsolutePath());
         fileAppender.setEncoder(encoder);
         fileAppender.setAppend(true);
@@ -64,14 +59,14 @@ public class LoggerSettings {
         rootLogger.addAppender(fileAppender);
     }
 
-    public static void deactivateFileLogging(Context context) {
+    public static void deactivateFileLogging(Context context, String fileName) {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         rootLogger.detachAppender(LOG_FILE_APPENDER_NAME);
-        getLogFile(context).delete();
+        getLogFile(context, fileName).delete();
     }
 
-    public static File getLogFile(Context context) {
-        return new File(context.getExternalFilesDir(""), LOG_FILE_NAME);
+    public static File getLogFile(Context context, String fileName) {
+        return new File(context.getExternalFilesDir(""), String.format("%1$s.txt", fileName));
     }
 }

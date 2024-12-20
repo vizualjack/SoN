@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             if(!preferences.isFileLoggingActivated()) return;
-            File logFile = LoggerSettings.getLogFile(getApplicationContext());
+            File logFile = LoggerSettings.getLogFile(getApplicationContext(), SyncerService.logFileName);
             long currentFileSize = getFileSize(logFile);
             if (logsTextView == null || currentFileSize <= lastFileSize) {
                 fileReaderHandler.postDelayed(this, fileReaderDelay);
@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver serviceStatusListener = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            logger.debug("Got service status intent");
             boolean isRunning = intent.getBooleanExtra(SyncerService.RUNNING_STATUS_CHANGED_INTENT_VALUE_KEY, false);
-            refreshGuiElements();
             refreshServiceStatus(isRunning);
             if(!isRunning && restartService) {
                 restartService = false;
@@ -138,8 +138,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        logger.debug("onDestroy");
+        super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(serviceStatusListener);
     }
 
@@ -151,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
                 restartService = true;
                 stopSyncService();
             } else startSyncService();
-            refreshGuiElements();
         }
     }
     private void onStopButtonPressed() {
@@ -272,14 +272,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             syncStartButton.setActivated(true);
-            if(SyncerService.running) {
-                syncStartButton.setText("Restart service");
-                syncStopButton.setVisibility(View.VISIBLE);
-            }
-            else {
-                syncStartButton.setText("Start service");
-                syncStopButton.setVisibility(View.GONE);
-            }
             try {
                 String decodedPath = URLDecoder.decode(Uri.parse(baseFolderPath).getLastPathSegment(), "UTF-8");
                 selectFolderText.setText("/" + decodedPath.split(":")[1]);
@@ -293,9 +285,13 @@ public class MainActivity extends AppCompatActivity {
         if(isRunning) {
             serviceStatusText.setText("Active");
             serviceStatusDot.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(0,255,0)));
+            syncStartButton.setText("Restart service");
+            syncStopButton.setVisibility(View.VISIBLE);
         } else {
             serviceStatusText.setText("Inactive");
             serviceStatusDot.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(255,0,0)));
+            syncStartButton.setText("Start service");
+            syncStopButton.setVisibility(View.GONE);
         }
     }
     private void makeHeaderLettersBold() {
@@ -316,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
     private long getFileSize(File file) {
+        if(file == null) return 0;
         if(!file.exists() || !file.isFile()) return 0;
         return file.length();
     }
