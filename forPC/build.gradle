@@ -24,12 +24,12 @@ dependencies {
     implementation 'com.google.guava:guava:30.1.1-jre'
 
     implementation project(':core')
+    implementation 'org.slf4j:slf4j-api:1.7.36'
     implementation 'ch.qos.logback:logback-classic:1.2.11'
 }
 
 application {
-    // Define the main class for the application.
-    //mainClass = 'son.pc.App'
+    mainClass = 'son.pc.App'
 }
 
 tasks.named('test') {
@@ -37,20 +37,27 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.register('build jar file', Jar) {
-    dependsOn ':forPC:jar'  // Depends on the core module's jar task
+tasks.register('build_jar', Jar) {
+    dependsOn ':forPC:jar', ':core:jar' // Ensuring the core and forPC JAR tasks are executed first
 
+    // Include compiled classes from forPC and core modules
     from project(':forPC').sourceSets.main.output
     from project(':core').sourceSets.main.output
-    // Include all dependencies in the JAR
-    //from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+
+    // Add all runtime dependencies into the JAR
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 
     // Specify the main class for the executable JAR
     manifest {
-        attributes 'Main-Class': 'son.pc.App' // Replace with your main class
+        attributes(
+            'Main-Class': 'son.pc.App'  // Make sure this is the fully qualified name of your main class
+        )
     }
 
-    // Rename the JAR file if needed
-    archiveFileName = 'son.jar' // Customize the JAR name
-    destinationDir file('build')      // Output directory
+    // Customize the JAR file name and output directory
+    archiveFileName = 'son.jar' // Your custom JAR name
+    destinationDirectory.set(file('build'))  // Save it to the libs folder, or customize as needed
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // This will exclude duplicates
 }
