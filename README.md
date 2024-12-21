@@ -1,13 +1,15 @@
 
-<img src="docs/app_icon.webp" alt="Header Image" width="50" style="display: inline;">
+<img src="doc/app_icon.webp" alt="Header Image" width="50" style="display: inline;">
 <div style="position: absolute; font-size: 2em; display: inline-block; top: 15px; left: 110px">
     SoN
 </div>
 
-[![Showcase](docs/showcase-thumbnail.png)](docs/showcase.mov "Showcase")
-[![Showcase](docs/showcase.gif)]
-
 **S**ync **o**ver **N**etwork is a synchronisation client for PC and Android devices to keep files in a directory synchronized.
+
+<video controls>
+    <source src="doc/showcase.mov" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
 
 ## Features
 - Set the base directory 
