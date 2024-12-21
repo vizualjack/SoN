@@ -17,6 +17,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,8 +27,10 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.DocumentsContract;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -49,6 +52,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import son.SyncFile;
 
 public class MainActivity extends AppCompatActivity {
     public static final String REQUEST_STOP_SERVICE = "son.android.app.REQUEST_STOP_SERVICE";
@@ -139,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        logger.debug("onDestroy");
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(serviceStatusListener);
     }
@@ -193,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    onFinish.run();
+                onFinish.run();
                 }
             });
         }

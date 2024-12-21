@@ -28,7 +28,7 @@ public abstract class SyncFolder {
         var syncFile = getSyncFile(SYNC_FILE_NAME);
         if(syncFile == null) createSyncFile(SYNC_FILE_NAME);
         if (syncFile == null) {
-            logger.debug("No last sync file, so i skip this");
+            logger.debug("No sync file and i can't create one, so i skip this");
             return;
         }
         try {

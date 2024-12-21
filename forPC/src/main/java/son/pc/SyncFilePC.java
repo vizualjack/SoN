@@ -23,11 +23,6 @@ public class SyncFilePC extends SyncFile {
     }
 
     @Override
-    public long getLastModified() {
-        return file.lastModified()/1000*1000;
-    }
-
-    @Override
     public long getSize() {
         return file.length();
     }
@@ -80,6 +75,12 @@ public class SyncFilePC extends SyncFile {
             logger.error("Can't close output stream");
             e.printStackTrace();
         }
+    }
+
+    
+    @Override
+    public long getLastModified() {
+        return file.lastModified()/1000*1000;
     }
 
     @Override

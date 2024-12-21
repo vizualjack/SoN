@@ -1,5 +1,6 @@
 package son.android;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
@@ -40,11 +41,6 @@ public class SyncFileAndroid extends SyncFile {
         String fullBaseFolderPath =  baseFolder.getUri().getLastPathSegment();
         String realPath = fullFilePath.replace(fullBaseFolderPath + "/", "");
         return realPath.replace("/", "\\");
-    }
-
-    @Override
-    public long getLastModified() {
-        return file.lastModified()/1000*1000;
     }
 
     @Override
@@ -107,31 +103,14 @@ public class SyncFileAndroid extends SyncFile {
             e.printStackTrace();
         }
     }
+    
+    @Override
+    public long getLastModified() {
+        return file.lastModified()/1000*1000;
+    }
 
     @Override
     public void setLastModified(long lastModified) {
         // doesn't work for android
-       try {
-//           file.getUri()
-           logger.debug("Set last modified ANDROID");
-//           ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(file.getUri(), "rw");
-//           if (pfd == null) {
-//               System.out.println("No ParcelFileDescriptor");
-//               return;
-//           }
-//           File f = new File(file.getUri().getPath());
-//           System.out.println("last modified prev: " + f.lastModified());
-//           if(f.setLastModified(lastModified)) System.out.println("Last modified set!");
-//           System.out.println("last modified after: " + f.lastModified());
-//           pfd.close();  // Close the ParcelFileDescriptor to release resources
-//           ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(file.getUri(), "rw");
-//           pfd.getFileDescriptor()
-//           ContentValues updateValues = new ContentValues();
-//           updateValues.put(DocumentsContract.Document.COLUMN_LAST_MODIFIED, lastModified);
-//           context.getContentResolver().insert(file.getUri(), updateValues);
-//           System.out.println("Changes: " + changes);
-       } catch (Exception e) {
-           e.printStackTrace();
-       }
     }
 }

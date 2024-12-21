@@ -88,7 +88,6 @@ public class SyncerService extends Service {
 
     @Override
     public void onDestroy() {
-        logger.debug("ondestroy");
         super.onDestroy();
         stop();
     }

@@ -36,13 +36,6 @@ public class Syncer {
         clientHolder.start();
     }
 
-//    public Syncer(SyncFolder syncFolder, ClientHolder clientHolder) {
-//        this.syncFolder = syncFolder;
-//        this.clientHolder = clientHolder;
-//        startServer();
-//        clientHolder.start();
-//    }
-
     private void startServer() {
         server = new Server(PORT);
         server.onConnected = s -> connectedToClient(s);
