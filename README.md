@@ -3,7 +3,7 @@
 
 **S**ync **o**ver **N**etwork is a synchronisation client for PC and Android devices to keep files in a directory synchronized.
 
-[![Showcase](doc/showcase-thumbnail.png)](https://youtu.be/eh9CliBSMAk "Showcase")
+https://github.com/user-attachments/assets/3e922e5d-3be6-4385-bd01-7d299a2a6af4
 
 ## Features
 - Set the base directory 
