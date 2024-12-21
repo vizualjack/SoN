@@ -1,15 +1,9 @@
 
-<img src="doc/app_icon.webp" alt="Header Image" width="50" style="display: inline;">
-<div style="position: absolute; font-size: 2em; display: inline-block; top: 15px; left: 110px">
-    SoN
-</div>
+# <img src="doc/app_icon.webp" alt="Header Image" width="35" style="display: inline"> SoN
 
 **S**ync **o**ver **N**etwork is a synchronisation client for PC and Android devices to keep files in a directory synchronized.
 
-<video controls>
-    <source src="doc/showcase.mov" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+[![Showcase](doc/showcase-thumbnail.png)](doc/showcase.mov "Showcase")
 
 ## Features
 - Set the base directory 
