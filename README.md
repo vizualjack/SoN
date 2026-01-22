@@ -5,31 +5,37 @@
 
 https://github.com/user-attachments/assets/3e922e5d-3be6-4385-bd01-7d299a2a6af4
 
-## Features
-- Set the base directory 
-- Synchronizes files
-- Synchronizes subdirectories
+### 📝 Features
+- Select a base directory for synchronization
+- Recursive file synchronization
+- Automatically creates missing directories
 
 
-## Setup for windows pc
-### 1. Install a jre
-You can find it [here](https://www.java.com/de/download/manual.jsp).
-### 2. Download the .jar file
-Please take a look at the release tab here in the repository.
-### 3. Start it!
-`java -jar son.jar <your_base_directory>`
+## 💻 Setup for PC
+### 1. ⚙️ Install a Java Runtime Environment (JRE)
+Download a JRE from the [official Java website](https://www.java.com/de/download/manual.jsp).
+### 2. 📥 Download the **.jar** file
+Check the [Releases](https://github.com/vizualjack/SoN/releases) section of this repository.
+### 3. 🚀 Start the application
+```
+java -jar son.jar <your_base_directory>
+```
+
+## 📱 Setup for Android phones
+### 1. 📥 Download the **.apk** file
+Check the [Releases](https://github.com/vizualjack/SoN/releases) section of this repository..
+### 2. ⚙️ Install the app
+Make sure installing apps from **unknown sources** is enabled on your device.
+### 3. 🚀 Start the application
+The app is self-explanatory.<br/>
+First, select a base folder, then start the synchronization service.
 
 
-## Setup for android phones
-### 1. Download the app(.apk) file
-Please take a look at the release tab here in the repository.
-### 2. Install the app
-Make sure you have allowed to install apk from an unknown source.
-### 3. Start it!
-The app should be self explained. You have to choose first a base folder and then you can start the service.
+## 🧑‍💻 Development
+### 💻 PC
+For desktop development, **[IntelliJ IDEA](https://www.jetbrains.com/de-de/idea/)** is recommended.<br/> 
+Just open the project and the IDE should handle the setup automatically.
 
-
-# Development information
-This project is a java based one.
-For the pc version of the app you can use for example IntelliJ IDEA, its java integration is that nice it should be enough to open the project/repo/folder and it should do the rest for you.
-For the android version android studio would be the choice as well just open the project/repo/folder and it should do the rest.
+### 📱 Android Phone
+For Android development, **[Android Studio](https://developer.android.com/studio)** is recommended.  
+Just open the project and the IDE should handle the setup automatically.
