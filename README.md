@@ -5,6 +5,8 @@
 
 https://github.com/user-attachments/assets/3e922e5d-3be6-4385-bd01-7d299a2a6af4
 
+⚠️ Note: Single synchronization pool only. Unencrypted communication - local network use only.
+
 ### 📝 Features
 - Select a base directory for synchronization
 - Recursive file synchronization
