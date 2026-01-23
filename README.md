@@ -3,7 +3,9 @@
 
 **S**ync **o**ver **N**etwork is a synchronisation client for PC and Android devices to keep files in a directory synchronized.
 
-https://github.com/user-attachments/assets/3e922e5d-3be6-4385-bd01-7d299a2a6af4
+https://github.com/user-attachments/assets/ea275498-962b-4a25-b77e-2440004a2121
+
+
 
 ⚠️ Note: Single synchronization pool only. Unencrypted communication - local network use only.
 
